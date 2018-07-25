@@ -13,7 +13,7 @@
 
 let App = unsafeWindow.App;
 
-let smuggle = f => {
+function smuggle(f) {
     if (typeof exportFunction !== "function") {
         return f;
     } else {
@@ -22,19 +22,19 @@ let smuggle = f => {
         // exported functions do not have to be exported.
         return exportFunction(f, window);
     }
-};
+}
 
 let pagesStored = [];
 let comments = {};
 
-let rewriteQuoteLinks = elem => {
+function rewriteQuoteLinks(elem) {
     for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
         let meta = comments[quoteLink.dataset.comment_id];
         if (meta !== undefined) {
             quoteLink.textContent = meta.author;
         }
     }
-};
+}
 
 // A collection of methods that will be assigned onto the real comment controller
 let commentControllerShell = {
