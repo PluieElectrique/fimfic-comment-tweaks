@@ -79,9 +79,6 @@ let commentControllerShell = {
             startIndex = Number(document.querySelector(".start-index").textContent);
         } else {
             ordering = -1;
-            // In ASC ordering, .end-index is incorrectly rounded up to the nearest multiple of 50.
-            // But it is correct in DESC ordering, so we can use it here.
-            // TODO: fix this
             startIndex = Number(document.querySelector(".end-index").textContent);
         }
 
@@ -97,8 +94,30 @@ let commentControllerShell = {
     }
 };
 
+function setupObservers() {
+    // In ASC ordering, .end-index is incorrectly rounded up to the nearest multiple of 50. It would
+    // be best to fix this by chaining a Promise onto goToPage. However, .end-index is set after the
+    // Promise callback is called, so we must observe the change instead.
+    let observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            let numComments = Number(document.querySelector(".num-comments").textContent);
+            let elem = mutation.target;
+            if (Number(elem.textContent) > numComments) {
+                elem.textContent = numComments;
+            }
+        });
+    });
+    document.querySelectorAll(".end-index").forEach(elem => {
+        // Changing textContent fires a childList event (removing and adding text nodes). It does not
+        // fire a characterData event as you might expect.
+        observer.observe(elem, { childList: true });
+    });
+}
+
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
     let commentController = App.createdControllers[storyComments.dataset.controllerId];
     Object.assign(commentController, commentControllerShell);
+
+    setupObservers();
 }
