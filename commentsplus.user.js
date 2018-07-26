@@ -145,8 +145,6 @@ let commentControllerShell = {
             fQuery.insertAfter(quoteCallback, comment);
             quoteCallback.addEventListener("mouseover", expandedCommentHandler);
             quoteCallback.addEventListener("mouseout", expandedCommentHandler);
-            // TODO: this is copied onto cloned comments. Do we want that?
-            quoteCallback.style.opacity = 0.75;
         };
 
         this.endShowQuote();
@@ -169,7 +167,6 @@ let commentControllerShell = {
             inlineComment.parentNode.removeChild(inlineComment);
             quoteCallback.removeEventListener("mouseover", expandedCommentHandler);
             quoteCallback.removeEventListener("mouseout", expandedCommentHandler);
-            quoteCallback.style.opacity = 1;
         }
     }),
 
