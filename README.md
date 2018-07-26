@@ -9,10 +9,15 @@ Userscript for enhanced Fimfiction comments
 * Don't show comment when hovering on an expanded link
 * Don't allow expanded child to expand parent
 * Forward hiding of comments
+* Collapse comments and their children
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)
 * Fix incorrect comment counts (e.g. `Viewing 1 - 50 of 3`)
+
+## Inspired By
+
+* 4chan X
 
 ## Legal
 

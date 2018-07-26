@@ -37,7 +37,7 @@ function rewriteQuoteLinks(elem) {
     }
 }
 
-// Clone a comment without any expanded quote links or callbacks
+// Clone a comment without expanded links, unhidden, no collapse link
 function cloneComment(comment) {
     let removeQuotes = root => {
         let quotes = [];
@@ -63,6 +63,12 @@ function cloneComment(comment) {
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
+    clone.classList.remove("forward-hidden");
+    clone.classList.remove("collapsed");
+    // Remove collapse link and mid-dot
+    let meta = clone.querySelector(".meta");
+    meta.removeChild(meta.firstChild);
+    meta.removeChild(meta.firstChild);
 
     addQuotes(comment_callbacks, callbackQuotes);
     addQuotes(data, linkQuotes);
@@ -84,12 +90,31 @@ function forwardHiding(id, change) {
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
     } else if (newCount === 0) {
-        comment.style.display = "table";
+        comment.classList.remove("forward-hidden");
     } else if (newCount === 1) {
-        comment.style.display = "none";
+        comment.classList.add("forward-hidden");
     }
 
     dataset.expandCount = newCount;
+}
+
+function toggleCollapseCommentTree(comment) {
+    collapseCommentTree(comment, !comment.classList.contains("collapsed"));
+}
+function collapseCommentTree(comment, collapse) {
+    if (collapse) {
+        comment.classList.add("collapsed");
+    } else {
+        comment.classList.remove("collapsed");
+    }
+    let collapseIcon = comment.querySelector(".collapse-link > i");
+    collapseIcon.classList.toggle("fa-minus-square-o");
+    collapseIcon.classList.toggle("fa-plus-square-o");
+
+    for (let callback of comment.querySelectorAll(".comment_callback")) {
+        let id = "comment_" + callback.dataset.comment_id;
+        collapseCommentTree(document.getElementById(id), collapse);
+    }
 }
 
 // Stop propagation of mouse events on comment links
@@ -123,6 +148,21 @@ let commentControllerShell = {
         this.prototype.setupQuotes.call(this);
         rewriteQuoteLinks(document);
         this.storeComments();
+
+        for (let meta of document.querySelectorAll(".meta")) {
+            let middot = document.createElement("b");
+            // .meta is display: inline-block, so the newlines in the code create spacing between
+            // the elements. We add a space because prepend doesn't leave newlines between elements.
+            middot.textContent = " \u00b7";
+            fQuery.prepend(meta, middot);
+
+            let collapseLink = document.createElement("a");
+            collapseLink.classList.add("collapse-link");
+            let minus = document.createElement("i");
+            minus.classList.add("fa", "fa-minus-square-o");
+            collapseLink.appendChild(minus);
+            fQuery.prepend(meta, collapseLink);
+        }
     }),
 
     goToPage: smuggle(function(num) {
@@ -241,7 +281,14 @@ let commentControllerShell = {
     prototype: CommentListController.prototype
 };
 
-function setupObservers() {
+function setupHandlers() {
+    fQuery.addScopedEventListener(
+        document.querySelector(".comment_list"),
+        ".collapse-link",
+        "click",
+        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    );
+
     // In ASC ordering, .end-index is incorrectly rounded up to the nearest multiple of 50. It would
     // be best to fix this by chaining a Promise onto goToPage. However, .end-index is set after the
     // Promise callback is called, so we must observe the change instead.
@@ -261,8 +308,29 @@ function setupObservers() {
     }
 }
 
-// Reduce padding on the right of comments to increase usable width when nesting.
-let cssCode = ".comment .data { padding-right: 0.3rem; }";
+let cssCode = `
+.collapse-link:not(:hover) {
+  opacity: 0.7;
+}
+.comment .data {
+  padding-right: 0.3rem;
+}
+.comment.forward-hidden {
+  display: none;
+}
+.comment.collapsed .avatar {
+  display: none;
+}
+.comment.collapsed .comment_callbacks {
+  display: none;
+}
+.comment.collapsed .comment_data {
+  display: none;
+}
+.comment.collapsed .comment_information:after {
+  height: 0;
+}
+`;
 function injectCSS() {
     let style = document.createElement("style");
     style.type = "text/css";
@@ -284,7 +352,7 @@ if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
-    setupObservers();
+    setupHandlers();
     injectCSS();
     initializeElements(commentController);
 }
