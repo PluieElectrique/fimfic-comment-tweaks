@@ -98,6 +98,23 @@ function forwardHiding(id, change) {
     dataset.expandCount = newCount;
 }
 
+function setupCollapseLinks() {
+    for (let meta of document.querySelectorAll(".meta")) {
+        let middot = document.createElement("b");
+        // .meta is display: inline-block, so the newlines in the code create spacing between
+        // the elements. We add a space because prepend doesn't leave newlines between elements.
+        middot.textContent = " \u00b7";
+        fQuery.prepend(meta, middot);
+
+        let collapseLink = document.createElement("a");
+        collapseLink.classList.add("collapse-link");
+        let minus = document.createElement("i");
+        minus.classList.add("fa", "fa-minus-square-o");
+        collapseLink.appendChild(minus);
+        fQuery.prepend(meta, collapseLink);
+    }
+}
+
 function toggleCollapseCommentTree(comment) {
     collapseCommentTree(comment, !comment.classList.contains("collapsed"));
 }
@@ -148,21 +165,7 @@ let commentControllerShell = {
         this.prototype.setupQuotes.call(this);
         rewriteQuoteLinks(document);
         this.storeComments();
-
-        for (let meta of document.querySelectorAll(".meta")) {
-            let middot = document.createElement("b");
-            // .meta is display: inline-block, so the newlines in the code create spacing between
-            // the elements. We add a space because prepend doesn't leave newlines between elements.
-            middot.textContent = " \u00b7";
-            fQuery.prepend(meta, middot);
-
-            let collapseLink = document.createElement("a");
-            collapseLink.classList.add("collapse-link");
-            let minus = document.createElement("i");
-            minus.classList.add("fa", "fa-minus-square-o");
-            collapseLink.appendChild(minus);
-            fQuery.prepend(meta, collapseLink);
-        }
+        setupCollapseLinks();
     }),
 
     goToPage: smuggle(function(num) {
@@ -352,6 +355,7 @@ if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
+    setupCollapseLinks();
     setupHandlers();
     injectCSS();
     initializeElements(commentController);
