@@ -130,7 +130,7 @@ function injectCSS() {
 
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
-    let commentController = App.createdControllers[storyComments.dataset.controllerId];
+    let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
     setupObservers();
