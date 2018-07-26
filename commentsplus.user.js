@@ -46,9 +46,8 @@ let commentControllerShell = {
             return new Promise(f => f(comment));
         }
 
-        return this.prototype.getComment
-            .call(this, id)
-            .then(smuggle(comment => {
+        return this.prototype.getComment.call(this, id).then(
+            smuggle(comment => {
                 let meta = comments[id];
                 if (meta !== undefined) {
                     // Rewrite comment index
@@ -56,7 +55,8 @@ let commentControllerShell = {
                 }
                 rewriteQuoteLinks(comment);
                 return comment;
-            }));
+            })
+        );
     }),
 
     setupQuotes: smuggle(function() {
@@ -104,19 +104,19 @@ function setupObservers() {
     // be best to fix this by chaining a Promise onto goToPage. However, .end-index is set after the
     // Promise callback is called, so we must observe the change instead.
     let observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            let numComments = Number(document.querySelector(".num-comments").textContent);
+        let numComments = Number(document.querySelector(".num-comments").textContent);
+        for (let mutation of mutations) {
             let elem = mutation.target;
             if (Number(elem.textContent) > numComments) {
                 elem.textContent = numComments;
             }
-        });
+        }
     });
-    document.querySelectorAll(".end-index").forEach(elem => {
+    for (let elem of document.querySelectorAll(".end-index")) {
         // Changing textContent fires a childList event (removing and adding text nodes). It does not
         // fire a characterData event as you might expect.
         observer.observe(elem, { childList: true });
-    });
+    }
 }
 
 // Reduce padding on the right of comments to increase usable width when nesting.
