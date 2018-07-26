@@ -110,9 +110,7 @@ function forwardHiding(id, change) {
 function setupCollapseLinks() {
     for (let meta of document.querySelectorAll(".meta")) {
         let middot = document.createElement("b");
-        // .meta is display: inline-block, so the newlines in the code create spacing between
-        // the elements. We add a space because prepend doesn't leave newlines between elements.
-        middot.textContent = " \u00b7";
+        middot.textContent = "\u00b7";
         fQuery.prepend(meta, middot);
 
         let collapseLink = document.createElement("a");
@@ -316,6 +314,9 @@ function setupHandlers() {
 }
 
 let cssCode = `
+.collapse-link {
+  padding: 3px;
+}
 .collapse-link:not(:hover) {
   opacity: 0.7;
 }
