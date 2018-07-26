@@ -37,6 +37,34 @@ function rewriteQuoteLinks(elem) {
     }
 }
 
+// Clone a comment without any expanded quote links or callbacks
+function cloneComment(comment) {
+    let comment_callbacks = comment.querySelector(".comment_callbacks");
+    let data = comment.querySelector(".data");
+
+    let callbackQuotes = [];
+    for (let quote of comment_callbacks.querySelectorAll(".inline-quote")) {
+        callbackQuotes.push(comment_callbacks.removeChild(quote));
+    }
+    let linkQuotes = [];
+    for (let quote of data.querySelectorAll(".inline-quote")) {
+        linkQuotes.push(quote.parentNode.removeChild(quote));
+    }
+
+    let clone = comment.cloneNode(true);
+    clone.removeAttribute("id");
+
+    for (let quote of callbackQuotes) {
+        comment_callbacks.appendChild(quote);
+    }
+    if (linkQuotes.length !== 0) {
+        for (let link of data.querySelectorAll(".comment_quote_link")) {
+            fQuery.insertAfter(link, linkQuotes.shift());
+        }
+    }
+    return clone;
+}
+
 // A collection of methods that will be assigned onto the real comment controller
 let commentControllerShell = {
     // Methods that shadow existing methods
@@ -68,6 +96,60 @@ let commentControllerShell = {
     goToPage: smuggle(function(num) {
         this.storeComments();
         this.prototype.goToPage.call(this, num);
+    }),
+
+    beginShowQuote: smuggle(function(quoteCallback) {
+        // Just in case a mouseover event is triggered before the last mouseover's mouseout has
+        this.endShowQuote();
+
+        let cancel = false;
+        this.getComment(quoteCallback.dataset.comment_id).then(comment => {
+            if (cancel) return;
+
+            this.quote_container.classList.remove("hidden");
+            if (this.quote_container.firstChild !== null) {
+                this.quote_container.removeChild(this.quote_container.firstChild);
+            }
+
+            this.quote_container.appendChild(cloneComment(comment));
+
+            let parentCommentRect = fQuery.closestParent(quoteCallback, ".comment").getBoundingClientRect();
+            let style = this.quote_container.style;
+            style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 20 + "px";
+            style.left = parentCommentRect.left - 20 + "px";
+            style.width = parentCommentRect.width + 40 + "px";
+
+            App.DispatchEvent(this.quote_container, "loadVisibleImages");
+        });
+
+        return function() {
+            cancel = true;
+        };
+    }),
+
+    expandQuote: smuggle(function(quoteCallback) {
+        this.endShowQuote();
+
+        let id = quoteCallback.dataset.comment_id;
+
+        let inlineComment = quoteCallback.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
+        if (inlineComment === null) {
+            let containerComment = this.quote_container.firstChild;
+
+            if (containerComment === null) {
+                this.getComment(id).then(comment => {
+                    let clone = cloneComment(comment);
+                    clone.classList.add("inline-quote");
+                    fQuery.insertAfter(quoteCallback, clone);
+                });
+            } else {
+                this.quote_container.removeChild(containerComment);
+                containerComment.classList.add("inline-quote");
+                fQuery.insertAfter(quoteCallback, containerComment);
+            }
+        } else {
+            inlineComment.parentNode.removeChild(inlineComment);
+        }
     }),
 
     // Extra methods for ease of accessing `this`
@@ -128,6 +210,15 @@ function injectCSS() {
     document.head.appendChild(style);
 }
 
+function initializeElements(controller) {
+    if (controller.quote_container === null) {
+        let container = document.createElement("div");
+        container.className = "quote_container";
+        document.body.appendChild(container);
+        controller.quote_container = container;
+    }
+}
+
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
@@ -135,4 +226,5 @@ if (storyComments !== null) {
 
     setupObservers();
     injectCSS();
+    initializeElements(commentController);
 }
