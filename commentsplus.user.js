@@ -114,10 +114,20 @@ function setupObservers() {
     });
 }
 
+// Reduce padding on the right of comments to increase usable width when nesting.
+let cssCode = ".comment .data { padding-right: 0.3rem; }";
+function injectCSS() {
+    let style = document.createElement("style");
+    style.type = "text/css";
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+}
+
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
     let commentController = App.createdControllers[storyComments.dataset.controllerId];
     Object.assign(commentController, commentControllerShell);
 
     setupObservers();
+    injectCSS();
 }
