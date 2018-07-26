@@ -70,6 +70,28 @@ function cloneComment(comment) {
     return clone;
 }
 
+// Change the expansion count of a comment and hide/unhide if necessary
+function forwardHiding(id, change) {
+    if (change !== 1 && change !== -1) {
+        throw new Error("Change to expand count must be 1 or -1");
+    }
+    let comment = document.getElementById(id);
+    // Foreign comments don't need to be hidden
+    if (comment === null) return;
+    let dataset = comment.dataset;
+
+    let newCount = Number(dataset.expandCount || 0) + change;
+    if (newCount < 0) {
+        throw new Error("Expand count cannot be less than 0");
+    } else if (newCount === 0) {
+        comment.style.display = "table";
+    } else if (newCount === 1) {
+        comment.style.display = "none";
+    }
+
+    dataset.expandCount = newCount;
+}
+
 // Stop propagation of mouse events on comment links
 function stopPropagation(evt) {
     evt.stopPropagation();
@@ -173,15 +195,20 @@ let commentControllerShell = {
             let containerComment = this.quote_container.firstChild;
 
             if (containerComment === null) {
-                this.getComment(id).then(comment => addComment(cloneComment(comment)));
+                this.getComment(id).then(comment => {
+                    addComment(cloneComment(comment));
+                    forwardHiding("comment_" + id, 1);
+                });
             } else {
                 this.quote_container.removeChild(containerComment);
                 addComment(containerComment);
+                forwardHiding("comment_" + id, 1);
             }
         } else {
             inlineComment.parentNode.removeChild(inlineComment);
             quoteLink.removeEventListener("mouseover", stopPropagation);
             quoteLink.removeEventListener("mouseout", stopPropagation);
+            forwardHiding("comment_" + id, -1);
         }
     }),
 
