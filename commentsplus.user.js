@@ -70,8 +70,8 @@ function cloneComment(comment) {
     return clone;
 }
 
-// Stop propagation of events so expanded links won't show the comment on hover
-function expandedCommentHandler(evt) {
+// Stop propagation of mouse events on comment links
+function stopPropagation(evt) {
     evt.stopPropagation();
 }
 
@@ -139,21 +139,36 @@ let commentControllerShell = {
         };
     }),
 
-    expandQuote: smuggle(function(quoteCallback) {
+    expandQuote: smuggle(function(quoteLink) {
         let addComment = comment => {
+            quoteLink.addEventListener("mouseover", stopPropagation);
+            quoteLink.addEventListener("mouseout", stopPropagation);
+
+            // Prevent the expansion of the parent from the child quote
+            let parentId = fQuery.closestParent(quoteLink, ".comment").dataset.comment_id;
+            let childLink = comment.querySelector(
+                `.comment_callback[data-comment_id='${parentId}']`
+            );
+            // Foreign comments currently don't have callbacks
+            if (childLink !== null) {
+                childLink.style.textDecoration = "underline";
+                childLink.addEventListener("mouseover", stopPropagation);
+                childLink.addEventListener("mouseout", stopPropagation);
+                childLink.addEventListener("click", evt => {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                });
+            }
             comment.classList.add("inline-quote");
-            fQuery.insertAfter(quoteCallback, comment);
-            quoteCallback.addEventListener("mouseover", expandedCommentHandler);
-            quoteCallback.addEventListener("mouseout", expandedCommentHandler);
+
+            fQuery.insertAfter(quoteLink, comment);
         };
 
         this.endShowQuote();
 
-        let id = quoteCallback.dataset.comment_id;
+        let id = quoteLink.dataset.comment_id;
 
-        let inlineComment = quoteCallback.parentNode.querySelector(
-            `.comment[data-comment_id='${id}']`
-        );
+        let inlineComment = quoteLink.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
         if (inlineComment === null) {
             let containerComment = this.quote_container.firstChild;
 
@@ -165,8 +180,8 @@ let commentControllerShell = {
             }
         } else {
             inlineComment.parentNode.removeChild(inlineComment);
-            quoteCallback.removeEventListener("mouseover", expandedCommentHandler);
-            quoteCallback.removeEventListener("mouseout", expandedCommentHandler);
+            quoteLink.removeEventListener("mouseover", stopPropagation);
+            quoteLink.removeEventListener("mouseout", stopPropagation);
         }
     }),
 

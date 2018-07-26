@@ -7,6 +7,7 @@ Userscript for enhanced Fimfiction comments
 * Increased comment width (by decreasing right padding)
 * Expand comments as fully collapsed
 * Don't show comment when hovering on an expanded link
+* Don't allow expanded child to expand parent
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)
