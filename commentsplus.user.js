@@ -37,6 +37,15 @@ function rewriteQuoteLinks(elem) {
     }
 }
 
+// In ASC order, .end-index is incorrectly rounded up to the nearest multiple of 50.
+// .start-index will be 1 even on a story with 0 comments.
+function fixCommentCounts(elem) {
+    let numComments = Number(document.querySelector(".num-comments").textContent);
+    if (Number(elem.textContent) > numComments) {
+        elem.textContent = numComments;
+    }
+}
+
 // Clone a comment without expanded links, unhidden, no collapse link
 function cloneComment(comment) {
     let removeQuotes = root => {
@@ -292,16 +301,11 @@ function setupHandlers() {
         evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
-    // In ASC ordering, .end-index is incorrectly rounded up to the nearest multiple of 50. It would
-    // be best to fix this by chaining a Promise onto goToPage. However, .end-index is set after the
-    // Promise callback is called, so we must observe the change instead.
+    // We would like to chain a Promise onto goToPage, but .end-index is set after the Promise
+    // callback is called, so we must observe the change instead.
     let observer = new MutationObserver(mutations => {
-        let numComments = Number(document.querySelector(".num-comments").textContent);
         for (let mutation of mutations) {
-            let elem = mutation.target;
-            if (Number(elem.textContent) > numComments) {
-                elem.textContent = numComments;
-            }
+            fixCommentCounts(mutation.target);
         }
     });
     for (let elem of document.querySelectorAll(".end-index")) {
@@ -354,6 +358,10 @@ let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
+
+    for (let index of document.querySelectorAll(".start-index, .end-index")) {
+        fixCommentCounts(index);
+    }
 
     setupCollapseLinks();
     setupHandlers();
