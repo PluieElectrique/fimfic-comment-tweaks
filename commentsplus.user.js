@@ -39,29 +39,34 @@ function rewriteQuoteLinks(elem) {
 
 // Clone a comment without any expanded quote links or callbacks
 function cloneComment(comment) {
-    let comment_callbacks = comment.querySelector(".comment_callbacks");
-    let data = comment.querySelector(".data");
+    let removeQuotes = root => {
+        let quotes = [];
+        for (let quote of root.querySelectorAll(".inline-quote")) {
+            // Get the link first. If we remove the quote first, then the sibling will be null.
+            quotes.push({
+                link: quote.previousElementSibling,
+                quote: quote.parentNode.removeChild(quote)
+            });
+        }
+        return quotes;
+    };
+    let addQuotes = (root, quotes) => {
+        for (let ql of quotes) {
+            fQuery.insertAfter(ql.link, ql.quote);
+        }
+    };
 
-    let callbackQuotes = [];
-    for (let quote of comment_callbacks.querySelectorAll(".inline-quote")) {
-        callbackQuotes.push(comment_callbacks.removeChild(quote));
-    }
-    let linkQuotes = [];
-    for (let quote of data.querySelectorAll(".inline-quote")) {
-        linkQuotes.push(quote.parentNode.removeChild(quote));
-    }
+    let comment_callbacks = comment.querySelector(".comment_callbacks");
+    let callbackQuotes = removeQuotes(comment_callbacks);
+    let data = comment.querySelector(".data");
+    let linkQuotes = removeQuotes(data);
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
 
-    for (let quote of callbackQuotes) {
-        comment_callbacks.appendChild(quote);
-    }
-    if (linkQuotes.length !== 0) {
-        for (let link of data.querySelectorAll(".comment_quote_link")) {
-            fQuery.insertAfter(link, linkQuotes.shift());
-        }
-    }
+    addQuotes(comment_callbacks, callbackQuotes);
+    addQuotes(data, linkQuotes);
+
     return clone;
 }
 
