@@ -65,6 +65,11 @@ function cloneComment(comment) {
     return clone;
 }
 
+// Stop propagation of events so expanded links won't show the comment on hover
+function expandedCommentHandler(evt) {
+    evt.stopPropagation();
+}
+
 // A collection of methods that will be assigned onto the real comment controller
 let commentControllerShell = {
     // Methods that shadow existing methods
@@ -128,6 +133,15 @@ let commentControllerShell = {
     }),
 
     expandQuote: smuggle(function(quoteCallback) {
+        let addComment = comment => {
+            comment.classList.add("inline-quote");
+            fQuery.insertAfter(quoteCallback, comment);
+            quoteCallback.addEventListener("mouseover", expandedCommentHandler);
+            quoteCallback.addEventListener("mouseout", expandedCommentHandler);
+            // TODO: this is copied onto cloned comments. Do we want that?
+            quoteCallback.style.opacity = 0.75;
+        };
+
         this.endShowQuote();
 
         let id = quoteCallback.dataset.comment_id;
@@ -137,18 +151,16 @@ let commentControllerShell = {
             let containerComment = this.quote_container.firstChild;
 
             if (containerComment === null) {
-                this.getComment(id).then(comment => {
-                    let clone = cloneComment(comment);
-                    clone.classList.add("inline-quote");
-                    fQuery.insertAfter(quoteCallback, clone);
-                });
+                this.getComment(id).then(comment => addComment(cloneComment(comment)));
             } else {
                 this.quote_container.removeChild(containerComment);
-                containerComment.classList.add("inline-quote");
-                fQuery.insertAfter(quoteCallback, containerComment);
+                addComment(containerComment);
             }
         } else {
             inlineComment.parentNode.removeChild(inlineComment);
+            quoteCallback.removeEventListener("mouseover", expandedCommentHandler);
+            quoteCallback.removeEventListener("mouseout", expandedCommentHandler);
+            quoteCallback.style.opacity = 1;
         }
     }),
 
