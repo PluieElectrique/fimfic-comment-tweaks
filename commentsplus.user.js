@@ -12,6 +12,7 @@
 // ==/UserScript==
 
 let App = unsafeWindow.App;
+let CommentListController = unsafeWindow.CommentListController;
 
 function smuggle(f) {
     if (typeof exportFunction !== "function") {
@@ -38,13 +39,14 @@ function rewriteQuoteLinks(elem) {
 
 // A collection of methods that will be assigned onto the real comment controller
 let commentControllerShell = {
+    // Methods that shadow existing methods
     getComment: smuggle(function(id) {
         let comment = document.getElementById("comment_" + id);
         if (comment !== null) {
             return new Promise(f => f(comment));
         }
 
-        return Object.getPrototypeOf(this).getComment
+        return this.prototype.getComment
             .call(this, id)
             .then(smuggle(comment => {
                 let meta = comments[id];
@@ -58,14 +60,14 @@ let commentControllerShell = {
     }),
 
     setupQuotes: smuggle(function() {
-        Object.getPrototypeOf(this).setupQuotes.call(this);
+        this.prototype.setupQuotes.call(this);
         rewriteQuoteLinks(document);
         this.storeComments();
     }),
 
     goToPage: smuggle(function(num) {
         this.storeComments();
-        Object.getPrototypeOf(this).goToPage.call(this, num);
+        this.prototype.goToPage.call(this, num);
     }),
 
     // Extra methods for ease of accessing `this`
@@ -91,7 +93,10 @@ let commentControllerShell = {
                 index: startIndex + ordering * i
             };
         });
-    }
+    },
+
+    // For ease of calling methods on the prototype
+    prototype: CommentListController.prototype
 };
 
 function setupObservers() {
