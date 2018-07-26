@@ -123,7 +123,9 @@ let commentControllerShell = {
 
             this.quote_container.appendChild(cloneComment(comment));
 
-            let parentCommentRect = fQuery.closestParent(quoteCallback, ".comment").getBoundingClientRect();
+            let parentCommentRect = fQuery
+                .closestParent(quoteCallback, ".comment")
+                .getBoundingClientRect();
             let style = this.quote_container.style;
             style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 20 + "px";
             style.left = parentCommentRect.left - 20 + "px";
@@ -151,7 +153,9 @@ let commentControllerShell = {
 
         let id = quoteCallback.dataset.comment_id;
 
-        let inlineComment = quoteCallback.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
+        let inlineComment = quoteCallback.parentNode.querySelector(
+            `.comment[data-comment_id='${id}']`
+        );
         if (inlineComment === null) {
             let containerComment = this.quote_container.firstChild;
 
