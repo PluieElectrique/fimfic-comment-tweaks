@@ -278,7 +278,7 @@ let commentControllerShell = {
 
         document.querySelectorAll(".comment").forEach((comment, i) => {
             // Is this a deleted comment?
-            if (comment.childElementCount === 2) return;
+            if (comment.firstElementChild.classList.contains("message")) return;
 
             comments[comment.dataset.comment_id] = {
                 author: comment.dataset.author,
