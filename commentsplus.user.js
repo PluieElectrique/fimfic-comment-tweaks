@@ -25,18 +25,6 @@ function smuggle(f) {
     }
 }
 
-let pagesStored = [];
-let comments = {};
-
-function rewriteQuoteLinks(elem) {
-    for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
-        let meta = comments[quoteLink.dataset.comment_id];
-        if (meta !== undefined) {
-            quoteLink.textContent = meta.author;
-        }
-    }
-}
-
 // Cap the given pagination index (.start-index or .end-index) at .num-comments.
 // There are two cases in which an index can be greater than .num-comments:
 //   * If a story has 0 comments, .start-index will incorrectly be 1.
@@ -148,8 +136,14 @@ function stopPropagation(evt) {
     evt.stopPropagation();
 }
 
-// A collection of methods that will be assigned onto the real comment controller
+// An object that will be assigned onto the real comment controller
 let commentControllerShell = {
+    // Map from comment number (`data-comment_id`) to { author, index }
+    commentMetadata: {},
+
+    // Comment pages whose metadata has been stored
+    pagesStored: [],
+
     // Methods that shadow existing methods
     getComment: smuggle(function(id) {
         let comment = document.getElementById("comment_" + id);
@@ -159,12 +153,12 @@ let commentControllerShell = {
 
         return this.prototype.getComment.call(this, id).then(
             smuggle(comment => {
-                let meta = comments[id];
+                let meta = this.commentMetadata[id];
                 if (meta !== undefined) {
                     // Rewrite comment index
                     comment.querySelector(`[href='#comment/${id}']`).textContent = "#" + meta.index;
                 }
-                rewriteQuoteLinks(comment);
+                this.rewriteQuoteLinks(comment);
                 return comment;
             })
         );
@@ -172,7 +166,7 @@ let commentControllerShell = {
 
     setupQuotes: smuggle(function() {
         this.prototype.setupQuotes.call(this);
-        rewriteQuoteLinks(document);
+        this.rewriteQuoteLinks(document);
         this.storeComments();
         setupCollapseLinks();
     }),
@@ -266,8 +260,8 @@ let commentControllerShell = {
 
     // Extra methods for ease of accessing `this`
     storeComments: function() {
-        if (pagesStored[this.currentPage]) return;
-        pagesStored[this.currentPage] = true;
+        if (this.pagesStored[this.currentPage]) return;
+        this.pagesStored[this.currentPage] = true;
 
         let ordering, startIndex;
         if (this.order === "ASC") {
@@ -282,11 +276,20 @@ let commentControllerShell = {
             // Is this a deleted comment?
             if (comment.firstElementChild.classList.contains("message")) return;
 
-            comments[comment.dataset.comment_id] = {
+            this.commentMetadata[comment.dataset.comment_id] = {
                 author: comment.dataset.author,
                 index: startIndex + ordering * i
             };
         });
+    },
+
+    rewriteQuoteLinks: function(elem) {
+        for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
+            let meta = this.commentMetadata[quoteLink.dataset.comment_id];
+            if (meta !== undefined) {
+                quoteLink.textContent = meta.author;
+            }
+        }
     },
 
     // For ease of calling methods on the prototype
