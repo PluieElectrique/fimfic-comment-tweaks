@@ -308,7 +308,7 @@ function setupHandlers() {
             fixPaginationIndex(mutation.target);
         }
     });
-    for (let elem of document.querySelectorAll(".end-index")) {
+    for (let elem of document.querySelectorAll(".start-index, .end-index")) {
         // Changing textContent fires a childList event (removing and adding text nodes). It does not
         // fire a characterData event as you might expect.
         observer.observe(elem, { childList: true });
