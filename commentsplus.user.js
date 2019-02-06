@@ -116,14 +116,11 @@ function toggleCollapseCommentTree(comment) {
     collapseCommentTree(comment, !comment.classList.contains("collapsed"));
 }
 function collapseCommentTree(comment, collapse) {
-    if (collapse) {
-        comment.classList.add("collapsed");
-    } else {
-        comment.classList.remove("collapsed");
-    }
+    comment.classList.toggle("collapsed", collapse);
+
     let collapseIcon = comment.querySelector(".collapse-link > i");
-    collapseIcon.classList.toggle("fa-minus-square-o");
-    collapseIcon.classList.toggle("fa-plus-square-o");
+    collapseIcon.classList.toggle("fa-plus-square-o", collapse);
+    collapseIcon.classList.toggle("fa-minus-square-o", !collapse);
 
     for (let callback of comment.querySelectorAll(".comment_callback")) {
         let id = "comment_" + callback.dataset.comment_id;
