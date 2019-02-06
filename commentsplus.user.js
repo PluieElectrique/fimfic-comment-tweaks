@@ -348,15 +348,6 @@ function injectCSS() {
     document.head.appendChild(style);
 }
 
-function initializeElements(controller) {
-    if (controller.quote_container === null) {
-        let container = document.createElement("div");
-        container.className = "quote_container";
-        document.body.appendChild(container);
-        controller.quote_container = container;
-    }
-}
-
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
@@ -369,5 +360,13 @@ if (storyComments !== null) {
     setupCollapseLinks();
     setupHandlers();
     injectCSS();
-    initializeElements(commentController);
+
+    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
+    // the original code, it's checked for on each call. Here, we create it at initialization.
+    if (commentController.quote_container === null) {
+        let container = document.createElement("div");
+        container.className = "quote_container";
+        document.body.appendChild(container);
+        commentController.quote_container = container;
+    }
 }
