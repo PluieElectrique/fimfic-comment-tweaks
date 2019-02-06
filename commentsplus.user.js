@@ -37,12 +37,14 @@ function rewriteQuoteLinks(elem) {
     }
 }
 
-// In ASC order, .end-index is incorrectly rounded up to the nearest multiple of 50.
-// .start-index will be 1 even on a story with 0 comments.
-function fixCommentCounts(elem) {
+// Cap the given pagination index (.start-index or .end-index) at .num-comments.
+// There are two cases in which an index can be greater than .num-comments:
+//   * If a story has 0 comments, .start-index will incorrectly be 1.
+//   * In ASC order, .end-index is incorrectly rounded up to the nearest multiple of 50.
+function fixPaginationIndex(paginationIndex) {
     let numComments = Number(document.querySelector(".num-comments").textContent);
-    if (Number(elem.textContent) > numComments) {
-        elem.textContent = numComments;
+    if (Number(paginationIndex.textContent) > numComments) {
+        paginationIndex.textContent = numComments;
     }
 }
 
@@ -303,7 +305,7 @@ function setupHandlers() {
     // callback is called, so we must observe the change instead.
     let observer = new MutationObserver(mutations => {
         for (let mutation of mutations) {
-            fixCommentCounts(mutation.target);
+            fixPaginationIndex(mutation.target);
         }
     });
     for (let elem of document.querySelectorAll(".end-index")) {
@@ -361,7 +363,7 @@ if (storyComments !== null) {
     Object.assign(commentController, commentControllerShell);
 
     for (let index of document.querySelectorAll(".start-index, .end-index")) {
-        fixCommentCounts(index);
+        fixPaginationIndex(index);
     }
 
     setupCollapseLinks();
