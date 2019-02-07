@@ -226,7 +226,14 @@ let commentControllerShell = {
             }
             comment.classList.add("inline-quote");
 
-            fQuery.insertAfter(quoteLink, comment);
+            // Search backwards through .comment_callbacks for the last quote link, and place this
+            // comment after it. This keeps quote links together at the top and orders expanded
+            // comments from most to least recently expanded.
+            let lastLink = quoteLink.parentElement.lastElementChild;
+            while (lastLink.tagName !== "A") {
+                lastLink = lastLink.previousElementSibling;
+            }
+            fQuery.insertAfter(lastLink, comment);
         };
 
         this.endShowQuote();
