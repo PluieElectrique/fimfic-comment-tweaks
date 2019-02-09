@@ -46,8 +46,8 @@ function cloneComment(comment) {
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
-    clone.classList.remove("forward-hidden");
-    clone.classList.remove("collapsed");
+    clone.classList.remove("cplus--forward-hidden");
+    clone.classList.remove("cplus--collapsed");
     // Remove collapse link and mid-dot
     let meta = clone.querySelector(".meta");
     meta.removeChild(meta.firstChild);
@@ -79,9 +79,9 @@ function forwardHiding(id, change) {
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
     } else if (newCount === 0) {
-        comment.classList.remove("forward-hidden");
+        comment.classList.remove("cplus--forward-hidden");
     } else if (newCount === 1) {
-        comment.classList.add("forward-hidden");
+        comment.classList.add("cplus--forward-hidden");
     }
 
     dataset.expandCount = newCount;
@@ -94,7 +94,7 @@ function setupCollapseLinks() {
         fQuery.prepend(meta, middot);
 
         let collapseLink = document.createElement("a");
-        collapseLink.classList.add("collapse-link");
+        collapseLink.classList.add("cplus--collapse-link");
         let minus = document.createElement("i");
         minus.classList.add("fa", "fa-minus-square-o");
         collapseLink.appendChild(minus);
@@ -103,12 +103,12 @@ function setupCollapseLinks() {
 }
 
 function toggleCollapseCommentTree(comment) {
-    collapseCommentTree(comment, !comment.classList.contains("collapsed"));
+    collapseCommentTree(comment, !comment.classList.contains("cplus--collapsed"));
 }
 function collapseCommentTree(comment, collapse) {
-    comment.classList.toggle("collapsed", collapse);
+    comment.classList.toggle("cplus--collapsed", collapse);
 
-    let collapseIcon = comment.querySelector(".collapse-link > i");
+    let collapseIcon = comment.querySelector(".cplus--collapse-link > i");
     collapseIcon.classList.toggle("fa-plus-square-o", collapse);
     collapseIcon.classList.toggle("fa-minus-square-o", !collapse);
 
@@ -302,28 +302,28 @@ let commentControllerShell = {
 };
 
 let cssCode = `
-.collapse-link {
+.cplus--collapse-link {
   padding: 3px;
 }
-.collapse-link:not(:hover) {
+.cplus--collapse-link:not(:hover) {
   opacity: 0.7;
 }
 .comment .data {
   padding-right: 0.3rem;
 }
-.comment.forward-hidden {
+.comment.cplus--forward-hidden {
   display: none;
 }
-.comment.collapsed .avatar {
+.comment.cplus--collapsed .avatar {
   display: none;
 }
-.comment.collapsed .comment_callbacks {
+.comment.cplus--collapsed .comment_callbacks {
   display: none;
 }
-.comment.collapsed .comment_data {
+.comment.cplus--collapsed .comment_data {
   display: none;
 }
-.comment.collapsed .comment_information:after {
+.comment.cplus--collapsed .comment_information:after {
   height: 0;
 }
 `;
@@ -341,8 +341,11 @@ if (storyComments !== null) {
 
     setupCollapseLinks();
 
-    fQuery.addScopedEventListener(commentController.comment_list, ".collapse-link", "click", evt =>
-        toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    fQuery.addScopedEventListener(
+        commentController.comment_list,
+        ".cplus--collapse-link",
+        "click",
+        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
     injectCSS();
