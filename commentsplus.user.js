@@ -65,17 +65,18 @@ function cloneComment(comment) {
     return clone;
 }
 
-// Change the expansion count of a comment and hide/unhide if necessary
-function forwardHide(id, change) {
+// If the link is a callback, update the expansion count of its comment and hide/unhide if needed.
+function forwardHide(quoteLink, change) {
+    if (!quoteLink.parentElement.classList.contains("comment_callbacks")) return;
     if (change !== 1 && change !== -1) {
         throw new Error("Change to expand count must be 1 or -1");
     }
-    let comment = document.getElementById(id);
+
+    let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
     // Foreign comments don't need to be hidden
     if (comment === null) return;
-    let dataset = comment.dataset;
 
-    let newCount = Number(dataset.expandCount || 0) + change;
+    let newCount = Number(comment.dataset.expandCount || 0) + change;
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
     } else if (newCount === 0) {
@@ -83,8 +84,7 @@ function forwardHide(id, change) {
     } else if (newCount === 1) {
         comment.classList.add("cplus--forward-hidden");
     }
-
-    dataset.expandCount = newCount;
+    comment.dataset.expandCount = newCount;
 }
 
 function setupCollapseButtons() {
@@ -223,12 +223,6 @@ let commentControllerShell = {
             fQuery.insertAfter(lastLink, comment);
         };
 
-        let fwdHide = count => {
-            if (quoteLink.parentElement.classList.contains("comment_callbacks")) {
-                forwardHide("comment_" + id, count);
-            }
-        };
-
         this.endShowQuote();
 
         let id = quoteLink.dataset.comment_id;
@@ -240,18 +234,18 @@ let commentControllerShell = {
             if (containerComment === null) {
                 this.getComment(id).then(comment => {
                     addComment(cloneComment(comment));
-                    fwdHide(1);
+                    forwardHide(quoteLink, 1);
                 });
             } else {
                 this.quote_container.removeChild(containerComment);
                 addComment(containerComment);
-                fwdHide(1);
+                forwardHide(quoteLink, 1);
             }
         } else {
             inlineComment.parentNode.removeChild(inlineComment);
             quoteLink.removeEventListener("mouseover", stopPropagation);
             quoteLink.removeEventListener("mouseout", stopPropagation);
-            fwdHide(-1);
+            forwardHide(quoteLink, -1);
         }
     }),
 
