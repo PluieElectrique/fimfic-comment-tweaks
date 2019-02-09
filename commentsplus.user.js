@@ -149,7 +149,7 @@ let commentControllerShell = {
 
     setupQuotes: smuggle(function() {
         this.prototype.setupQuotes.call(this);
-        this.rewriteQuoteLinks(document);
+        this.rewriteQuoteLinks(this.comment_list);
         this.storeComments();
         setupCollapseLinks();
     }),
