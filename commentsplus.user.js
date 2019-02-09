@@ -25,7 +25,7 @@ function smuggle(f) {
     }
 }
 
-// Clone a comment without expanded links, unhidden, no collapse link
+// Clone a comment without expanded links, unhidden, no collapse button
 function cloneComment(comment) {
     // Remove quotes to avoid cloning them
     let commentCallbacks = comment.querySelector(".comment_callbacks");
@@ -48,7 +48,7 @@ function cloneComment(comment) {
     clone.removeAttribute("id");
     clone.classList.remove("cplus--forward-hidden");
     clone.classList.remove("cplus--collapsed");
-    // Remove collapse link and mid-dot
+    // Remove collapse button and mid-dot
     let meta = clone.querySelector(".meta");
     meta.removeChild(meta.firstChild);
     meta.removeChild(meta.firstChild);
@@ -87,18 +87,18 @@ function forwardHiding(id, change) {
     dataset.expandCount = newCount;
 }
 
-function setupCollapseLinks() {
+function setupCollapseButtons() {
     for (let meta of document.querySelectorAll(".meta")) {
         let middot = document.createElement("b");
         middot.textContent = "\u00b7";
         fQuery.prepend(meta, middot);
 
-        let collapseLink = document.createElement("a");
-        collapseLink.classList.add("cplus--collapse-link");
+        let collapseButton = document.createElement("a");
+        collapseButton.classList.add("cplus--collapse-button");
         let minus = document.createElement("i");
         minus.classList.add("fa", "fa-minus-square-o");
-        collapseLink.appendChild(minus);
-        fQuery.prepend(meta, collapseLink);
+        collapseButton.appendChild(minus);
+        fQuery.prepend(meta, collapseButton);
     }
 }
 
@@ -108,7 +108,7 @@ function toggleCollapseCommentTree(comment) {
 function collapseCommentTree(comment, collapse) {
     comment.classList.toggle("cplus--collapsed", collapse);
 
-    let collapseIcon = comment.querySelector(".cplus--collapse-link > i");
+    let collapseIcon = comment.querySelector(".cplus--collapse-button > i");
     collapseIcon.classList.toggle("fa-plus-square-o", collapse);
     collapseIcon.classList.toggle("fa-minus-square-o", !collapse);
 
@@ -152,7 +152,7 @@ let commentControllerShell = {
         this.prototype.setupQuotes.call(this);
         this.rewriteQuoteLinks(this.comment_list);
         this.storeComments();
-        setupCollapseLinks();
+        setupCollapseButtons();
     }),
 
     goToPage: smuggle(function(num) {
@@ -302,10 +302,10 @@ let commentControllerShell = {
 };
 
 let cssCode = `
-.cplus--collapse-link {
+.cplus--collapse-button {
   padding: 3px;
 }
-.cplus--collapse-link:not(:hover) {
+.cplus--collapse-button:not(:hover) {
   opacity: 0.7;
 }
 .comment .data {
@@ -339,11 +339,11 @@ if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
-    setupCollapseLinks();
+    setupCollapseButtons();
 
     fQuery.addScopedEventListener(
         commentController.comment_list,
-        ".cplus--collapse-link",
+        ".cplus--collapse-button",
         "click",
         evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
