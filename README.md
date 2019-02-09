@@ -12,6 +12,7 @@ Userscript for enhanced Fimfiction comments. Inspired by [4chan X](https://www.4
 * Forward hiding of comments
 * Collapse comments and their children
 * No 150ms delay to show comment when hovering over quote link
+* Show username in expanded quote
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)

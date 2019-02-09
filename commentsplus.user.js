@@ -48,10 +48,6 @@ function cloneComment(comment) {
     clone.removeAttribute("id");
     clone.classList.remove("cplus--forward-hidden");
     clone.classList.remove("cplus--collapsed");
-    // Remove collapse button and mid-dot
-    let meta = clone.querySelector(".meta");
-    meta.removeChild(meta.firstChild);
-    meta.removeChild(meta.firstChild);
 
     // Restore quotes
     for (let quote of callbackQuotes) {
@@ -304,6 +300,8 @@ let commentControllerShell = {
 let cssCode = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
+.inline-quote .cplus--collapse-button { display: none; }
+.inline-quote .meta .name { display: inline; }
 .comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
 .comment.cplus--collapsed .author > .avatar { display: none; }
