@@ -66,7 +66,7 @@ function cloneComment(comment) {
 }
 
 // Change the expansion count of a comment and hide/unhide if necessary
-function forwardHiding(id, change) {
+function forwardHide(id, change) {
     if (change !== 1 && change !== -1) {
         throw new Error("Change to expand count must be 1 or -1");
     }
@@ -223,6 +223,12 @@ let commentControllerShell = {
             fQuery.insertAfter(lastLink, comment);
         };
 
+        let fwdHide = count => {
+            if (quoteLink.parentElement.classList.contains("comment_callbacks")) {
+                forwardHide("comment_" + id, count);
+            }
+        };
+
         this.endShowQuote();
 
         let id = quoteLink.dataset.comment_id;
@@ -234,18 +240,18 @@ let commentControllerShell = {
             if (containerComment === null) {
                 this.getComment(id).then(comment => {
                     addComment(cloneComment(comment));
-                    forwardHiding("comment_" + id, 1);
+                    fwdHide(1);
                 });
             } else {
                 this.quote_container.removeChild(containerComment);
                 addComment(containerComment);
-                forwardHiding("comment_" + id, 1);
+                fwdHide(1);
             }
         } else {
             inlineComment.parentNode.removeChild(inlineComment);
             quoteLink.removeEventListener("mouseover", stopPropagation);
             quoteLink.removeEventListener("mouseout", stopPropagation);
-            forwardHiding("comment_" + id, -1);
+            fwdHide(-1);
         }
     }),
 
