@@ -326,6 +326,31 @@ if (storyComments !== null) {
         evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
+    // Remove the 150ms delay to show a comment when hovering on a quote link
+    let cancelShowQuote = null;
+    fQuery.addScopedEventListener(
+        commentController.comment_list,
+        ".comment_quote_link",
+        "mouseover",
+        evt => {
+            evt.stopPropagation();
+            cancelShowQuote = commentController.beginShowQuote(evt.target);
+        }
+    );
+    fQuery.addScopedEventListener(
+        commentController.comment_list,
+        ".comment_quote_link",
+        "mouseout",
+        evt => {
+            if (cancelShowQuote !== null) {
+                cancelShowQuote();
+                cancelShowQuote = null;
+            }
+            evt.stopPropagation();
+            commentController.endShowQuote();
+        }
+    );
+
     let style = document.createElement("style");
     style.type = "text/css";
     style.textContent = cssCode;

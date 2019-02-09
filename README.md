@@ -10,6 +10,7 @@ Userscript for enhanced Fimfiction comments
 * Don't allow expanded child to expand parent
 * Forward hiding of comments
 * Collapse comments and their children
+* No 150ms delay to show comment when hovering over quote link
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)
