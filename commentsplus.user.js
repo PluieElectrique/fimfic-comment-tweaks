@@ -25,17 +25,6 @@ function smuggle(f) {
     }
 }
 
-// Cap the given pagination index (.start-index or .end-index) at .num-comments.
-// There are two cases in which an index can be greater than .num-comments:
-//   * If a story has 0 comments, .start-index will incorrectly be 1.
-//   * In ASC order, .end-index is incorrectly rounded up to the nearest multiple of 50.
-function fixPaginationIndex(paginationIndex) {
-    let numComments = Number(document.querySelector(".num-comments").textContent);
-    if (Number(paginationIndex.textContent) > numComments) {
-        paginationIndex.textContent = numComments;
-    }
-}
-
 // Clone a comment without expanded links, unhidden, no collapse link
 function cloneComment(comment) {
     let removeQuotes = root => {
@@ -137,9 +126,6 @@ function stopPropagation(evt) {
 let commentControllerShell = {
     // Map from comment number (`data-comment_id`) to { author, index }
     commentMetadata: {},
-
-    // Comment pages whose metadata has been stored
-    pagesStored: [],
 
     // Methods that shadow existing methods
     getComment: smuggle(function(id) {
@@ -264,9 +250,8 @@ let commentControllerShell = {
 
     // Extra methods for ease of accessing `this`
     storeComments: function() {
-        if (this.pagesStored[this.currentPage]) return;
-        this.pagesStored[this.currentPage] = true;
-
+        // It's easier to number the comments off from an index than it is to extract the index from
+        // the <a> (as that <a> has no ID to easily get it by).
         let ordering, startIndex;
         if (this.order === "ASC") {
             ordering = 1;
@@ -276,7 +261,17 @@ let commentControllerShell = {
             startIndex = Number(document.querySelector(".end-index").textContent);
         }
 
-        document.querySelectorAll(".comment").forEach((comment, i) => {
+        // There are two cases in which an index can be greater than .num-comments:
+        //   * If a story has 0 comments, .start-index will incorrectly be 1.
+        //   * In ASC order, .end-index is rounded up to the nearest multiple of 50. If the number
+        //     of comments is not a multiple of 50, .end-index will be wrong on the last page.
+        //     Issue: https://github.com/knighty/fimfiction-issues/issues/124
+        startIndex = Math.min(
+            startIndex,
+            Number(document.querySelector(".num-comments").textContent)
+        );
+
+        this.comment_list.childNodes.forEach((comment, i) => {
             // Is this a deleted comment?
             if (comment.firstElementChild.classList.contains("message")) return;
 
@@ -299,28 +294,6 @@ let commentControllerShell = {
     // For ease of calling methods on the prototype
     prototype: CommentListController.prototype
 };
-
-function setupHandlers() {
-    fQuery.addScopedEventListener(
-        document.querySelector(".comment_list"),
-        ".collapse-link",
-        "click",
-        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
-    );
-
-    // We would like to chain a Promise onto goToPage, but .end-index is set after the Promise
-    // callback is called, so we must observe the change instead.
-    let observer = new MutationObserver(mutations => {
-        for (let mutation of mutations) {
-            fixPaginationIndex(mutation.target);
-        }
-    });
-    for (let elem of document.querySelectorAll(".start-index, .end-index")) {
-        // Changing textContent fires a childList event (removing and adding text nodes). It does not
-        // fire a characterData event as you might expect.
-        observer.observe(elem, { childList: true });
-    }
-}
 
 let cssCode = `
 .collapse-link {
@@ -360,12 +333,15 @@ if (storyComments !== null) {
     let commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
-    for (let index of document.querySelectorAll(".start-index, .end-index")) {
-        fixPaginationIndex(index);
-    }
-
     setupCollapseLinks();
-    setupHandlers();
+
+    fQuery.addScopedEventListener(
+        commentController.comment_list,
+        ".collapse-link",
+        "click",
+        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    );
+
     injectCSS();
 
     // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In

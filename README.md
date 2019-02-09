@@ -13,7 +13,6 @@ Userscript for enhanced Fimfiction comments
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)
-* Fix incorrect comment counts (e.g. `Viewing 1 - 50 of 3`)
 
 ## Inspired By
 
