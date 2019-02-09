@@ -341,11 +341,8 @@ if (storyComments !== null) {
 
     setupCollapseLinks();
 
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".collapse-link",
-        "click",
-        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    fQuery.addScopedEventListener(commentController.comment_list, ".collapse-link", "click", evt =>
+        toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
     injectCSS();
