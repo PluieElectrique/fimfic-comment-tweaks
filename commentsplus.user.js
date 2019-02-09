@@ -251,15 +251,18 @@ let commentControllerShell = {
 
     // Extra methods for ease of accessing `this`
     storeComments: function() {
+        let indexToNumber = indexClass =>
+            Number(document.querySelector(indexClass).textContent.replace(/,/g, ""));
+
         // It's easier to number the comments off from an index than it is to extract the index from
         // the <a> (as that <a> has no ID to easily get it by).
         let ordering, startIndex;
         if (this.order === "ASC") {
             ordering = 1;
-            startIndex = Number(document.querySelector(".start-index").textContent);
+            startIndex = indexToNumber(".start-index");
         } else {
             ordering = -1;
-            startIndex = Number(document.querySelector(".end-index").textContent);
+            startIndex = indexToNumber(".end-index");
         }
 
         // There are two cases in which an index can be greater than .num-comments:
@@ -267,12 +270,9 @@ let commentControllerShell = {
         //   * In ASC order, .end-index is rounded up to the nearest multiple of 50. If the number
         //     of comments is not a multiple of 50, .end-index will be wrong on the last page.
         //     Issue: https://github.com/knighty/fimfiction-issues/issues/124
-        startIndex = Math.min(
-            startIndex,
-            Number(document.querySelector(".num-comments").textContent)
-        );
+        startIndex = Math.min(startIndex, indexToNumber(".num-comments"));
 
-        this.comment_list.childNodes.forEach((comment, i) => {
+        Array.from(this.comment_list.children).forEach((comment, i) => {
             // Is this a deleted comment?
             if (
                 comment.firstElementChild.classList.contains("message") &&
