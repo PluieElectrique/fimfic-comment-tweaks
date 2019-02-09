@@ -69,9 +69,6 @@ function forwardHide(quoteLink, change) {
     }
 
     let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
-    // Foreign comments don't need to be hidden
-    if (comment === null) return;
-
     let newCount = Number(comment.dataset.expandCount || 0) + change;
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
