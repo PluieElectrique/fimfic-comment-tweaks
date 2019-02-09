@@ -88,17 +88,17 @@ function forwardHiding(id, change) {
 }
 
 function setupCollapseButtons() {
-    for (let meta of document.querySelectorAll(".meta")) {
+    for (let metaName of document.querySelectorAll(".meta > .name")) {
         let middot = document.createElement("b");
         middot.textContent = "\u00b7";
-        fQuery.prepend(meta, middot);
+        fQuery.insertAfter(metaName, middot);
 
         let collapseButton = document.createElement("a");
         collapseButton.classList.add("cplus--collapse-button");
         let minus = document.createElement("i");
         minus.classList.add("fa", "fa-minus-square-o");
         collapseButton.appendChild(minus);
-        fQuery.prepend(meta, collapseButton);
+        fQuery.insertAfter(metaName, collapseButton);
     }
 }
 
@@ -306,7 +306,7 @@ let cssCode = `
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
 .comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
-.comment.cplus--collapsed .avatar { display: none; }
+.comment.cplus--collapsed .author > .avatar { display: none; }
 .comment.cplus--collapsed .comment_callbacks { display: none; }
 .comment.cplus--collapsed .comment_data { display: none; }
 .comment.cplus--collapsed .comment_information:after { height: 0; }
