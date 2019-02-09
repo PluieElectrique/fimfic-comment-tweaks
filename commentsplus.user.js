@@ -273,7 +273,12 @@ let commentControllerShell = {
 
         this.comment_list.childNodes.forEach((comment, i) => {
             // Is this a deleted comment?
-            if (comment.firstElementChild.classList.contains("message")) return;
+            if (
+                comment.firstElementChild.classList.contains("message") &&
+                comment.lastElementChild.classList.contains("hidden")
+            ) {
+                return;
+            }
 
             this.commentMetadata[comment.dataset.comment_id] = {
                 author: comment.dataset.author,
