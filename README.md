@@ -1,5 +1,6 @@
 # Fimfiction Comments Plus
-Userscript for enhanced Fimfiction comments
+
+Userscript for enhanced Fimfiction comments. Inspired by [4chan X](https://www.4chan-x.net/).
 
 ## Features
 
@@ -14,10 +15,6 @@ Userscript for enhanced Fimfiction comments
 
 ### Bug fixes (for Fimfiction)
 * Fix header in hovered/expanded comments (show author and correct index)
-
-## Inspired By
-
-* 4chan X
 
 ## Legal
 
