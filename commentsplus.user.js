@@ -27,27 +27,22 @@ function smuggle(f) {
 
 // Clone a comment without expanded links, unhidden, no collapse link
 function cloneComment(comment) {
-    let removeQuotes = root => {
-        let quotes = [];
-        for (let quote of root.querySelectorAll(".inline-quote")) {
-            // Get the link first. If we remove the quote first, then the sibling will be null.
-            quotes.push({
-                link: quote.previousElementSibling,
-                quote: quote.parentNode.removeChild(quote)
-            });
-        }
-        return quotes;
-    };
-    let addQuotes = (root, quotes) => {
-        for (let ql of quotes) {
-            fQuery.insertAfter(ql.link, ql.quote);
-        }
-    };
+    // Remove quotes to avoid cloning them
+    let commentCallbacks = comment.querySelector(".comment_callbacks");
+    let callbackQuotes = commentCallbacks.querySelectorAll(".inline-quote");
+    for (let quote of callbackQuotes) {
+        commentCallbacks.removeChild(quote);
+    }
 
-    let comment_callbacks = comment.querySelector(".comment_callbacks");
-    let callbackQuotes = removeQuotes(comment_callbacks);
-    let data = comment.querySelector(".data");
-    let linkQuotes = removeQuotes(data);
+    let commentData = comment.querySelector(".comment_data");
+    let dataQuotes = [];
+    for (let quote of commentData.querySelectorAll(".inline-quote")) {
+        // Get the link first. If we remove the quote first, then the sibling will be null.
+        dataQuotes.push({
+            link: quote.previousElementSibling,
+            quote: quote.parentNode.removeChild(quote)
+        });
+    }
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
@@ -58,8 +53,14 @@ function cloneComment(comment) {
     meta.removeChild(meta.firstChild);
     meta.removeChild(meta.firstChild);
 
-    addQuotes(comment_callbacks, callbackQuotes);
-    addQuotes(data, linkQuotes);
+    // Restore quotes
+    for (let quote of callbackQuotes) {
+        commentCallbacks.appendChild(quote);
+    }
+
+    for (let quote of dataQuotes) {
+        fQuery.insertAfter(quote.link, quote.quote);
+    }
 
     return clone;
 }
