@@ -302,37 +302,15 @@ let commentControllerShell = {
 };
 
 let cssCode = `
-.cplus--collapse-button {
-  padding: 3px;
-}
-.cplus--collapse-button:not(:hover) {
-  opacity: 0.7;
-}
-.comment .data {
-  padding-right: 0.3rem;
-}
-.comment.cplus--forward-hidden {
-  display: none;
-}
-.comment.cplus--collapsed .avatar {
-  display: none;
-}
-.comment.cplus--collapsed .comment_callbacks {
-  display: none;
-}
-.comment.cplus--collapsed .comment_data {
-  display: none;
-}
-.comment.cplus--collapsed .comment_information:after {
-  height: 0;
-}
+.cplus--collapse-button { padding: 3px; }
+.cplus--collapse-button:not(:hover) { opacity: 0.7; }
+.comment .data { padding-right: 0.3rem; }
+.comment.cplus--forward-hidden { display: none; }
+.comment.cplus--collapsed .avatar { display: none; }
+.comment.cplus--collapsed .comment_callbacks { display: none; }
+.comment.cplus--collapsed .comment_data { display: none; }
+.comment.cplus--collapsed .comment_information:after { height: 0; }
 `;
-function injectCSS() {
-    let style = document.createElement("style");
-    style.type = "text/css";
-    style.textContent = cssCode;
-    document.head.appendChild(style);
-}
 
 let storyComments = document.getElementById("story_comments");
 if (storyComments !== null) {
@@ -348,7 +326,10 @@ if (storyComments !== null) {
         evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
-    injectCSS();
+    let style = document.createElement("style");
+    style.type = "text/css";
+    style.textContent = cssCode;
+    document.head.appendChild(style);
 
     // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
     // the original code, it's checked for on each call. Here, we create it at initialization.
