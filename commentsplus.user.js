@@ -159,6 +159,7 @@ let commentControllerShell = {
         this.prototype.goToPage.call(this, num);
     }),
 
+    // Largely copied from Fimfiction's code
     beginShowQuote: smuggle(function(quoteCallback) {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
