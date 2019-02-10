@@ -25,7 +25,7 @@ function smuggle(f) {
     }
 }
 
-// Clone a comment without expanded links, unhidden, no collapse button
+// Clone a comment unhidden and without expanded links and collapse button/middot
 function cloneComment(comment) {
     // Remove quotes to avoid cloning them
     let commentCallbacks = comment.querySelector(".comment_callbacks");
@@ -48,6 +48,14 @@ function cloneComment(comment) {
     clone.removeAttribute("id");
     clone.classList.remove("cplus--forward-hidden");
     clone.classList.remove("cplus--collapsed");
+
+    // Remove middot and collapse button
+    let collapseButton = clone.querySelector(".cplus--collapse-button");
+    if (collapseButton !== null) {
+        let parent = collapseButton.parentElement;
+        parent.removeChild(collapseButton.nextElementSibling);
+        parent.removeChild(collapseButton);
+    }
 
     // Restore quotes
     for (let quote of callbackQuotes) {
@@ -82,9 +90,7 @@ function forwardHide(quoteLink, change) {
 
 function setupCollapseButtons() {
     for (let metaName of document.querySelectorAll(".meta > .name")) {
-        let middot = document.createElement("b");
-        middot.textContent = "\u00b7";
-        fQuery.insertAfter(metaName, middot);
+        fQuery.insertAfter(metaName, createMiddot());
 
         let collapseButton = document.createElement("a");
         collapseButton.classList.add("cplus--collapse-button");
@@ -186,6 +192,9 @@ let commentControllerShell = {
 
     expandQuote: smuggle(function(quoteLink) {
         let addComment = comment => {
+            // Add middot after username in .meta to separate it from the index
+            fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
+
             quoteLink.addEventListener("mouseover", stopPropagation);
             quoteLink.addEventListener("mouseout", stopPropagation);
 
@@ -297,8 +306,7 @@ let commentControllerShell = {
 let cssCode = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
-.inline-quote .cplus--collapse-button { display: none; }
-.inline-quote .meta .name { display: inline; }
+.inline-quote .meta > .name { display: inline; }
 .comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
 .comment.cplus--collapsed .author > .avatar { display: none; }
@@ -359,4 +367,10 @@ if (storyComments !== null) {
         document.body.appendChild(container);
         commentController.quote_container = container;
     }
+}
+
+function createMiddot() {
+    let middot = document.createElement("b");
+    middot.textContent = "\u00b7";
+    return middot;
 }
