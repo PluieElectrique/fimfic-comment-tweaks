@@ -293,7 +293,7 @@ let commentControllerShell = {
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
             let meta = this.commentMetadata[quoteLink.dataset.comment_id];
             if (meta !== undefined) {
-                quoteLink.textContent = meta.author;
+                quoteLink.textContent = `${meta.author} (#${meta.index})`;
             }
         }
     },
