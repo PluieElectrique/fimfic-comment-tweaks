@@ -31,7 +31,7 @@ function cloneComment(comment) {
     let commentCallbacks = comment.querySelector(".comment_callbacks");
     let callbackQuotes = commentCallbacks.querySelectorAll(".inline-quote");
     for (let quote of callbackQuotes) {
-        commentCallbacks.removeChild(quote);
+        fQuery.removeElement(quote);
     }
 
     let commentData = comment.querySelector(".comment_data");
@@ -52,9 +52,8 @@ function cloneComment(comment) {
     // Remove middot and collapse button
     let collapseButton = clone.querySelector(".cplus--collapse-button");
     if (collapseButton !== null) {
-        let parent = collapseButton.parentElement;
-        parent.removeChild(collapseButton.nextElementSibling);
-        parent.removeChild(collapseButton);
+        fQuery.removeElement(collapseButton.nextElementSibling);
+        fQuery.removeElement(collapseButton);
     }
 
     // Restore quotes
@@ -169,7 +168,7 @@ let commentControllerShell = {
 
             this.quote_container.classList.remove("hidden");
             if (this.quote_container.firstChild !== null) {
-                this.quote_container.removeChild(this.quote_container.firstChild);
+                fQuery.removeElement(this.quote_container.firstChild);
             }
 
             this.quote_container.appendChild(cloneComment(comment));
@@ -239,12 +238,12 @@ let commentControllerShell = {
                     forwardHide(quoteLink, 1);
                 });
             } else {
-                this.quote_container.removeChild(containerComment);
+                fQuery.removeElement(containerComment);
                 addComment(containerComment);
                 forwardHide(quoteLink, 1);
             }
         } else {
-            inlineComment.parentNode.removeChild(inlineComment);
+            fQuery.removeElement(inlineComment);
             quoteLink.removeEventListener("mouseover", stopPropagation);
             quoteLink.removeEventListener("mouseout", stopPropagation);
             forwardHide(quoteLink, -1);
