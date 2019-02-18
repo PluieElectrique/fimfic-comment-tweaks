@@ -182,8 +182,13 @@ let commentControllerShell = {
 
     expandQuote: function(quoteLink) {
         let addComment = comment => {
-            // Add middot after username in .meta to separate it from the index
-            fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
+            // is_mobile is a global boolean declared in an inline script in <head>. So, it seems
+            // detection of mobile browsers is done server side (probably through user agent).
+            if (!is_mobile) {
+                // Add middot after username in .meta to separate it from the index. On mobile, the
+                // username is `display: block;`, so we don't need a separator.
+                fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
+            }
 
             quoteLink.addEventListener("mouseover", stopPropagation);
             quoteLink.addEventListener("mouseout", stopPropagation);
@@ -296,7 +301,7 @@ let commentControllerShell = {
 let cssCode = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
-.inline-quote .meta > .name { display: inline; }
+@media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 .comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
 .comment.cplus--collapsed .author > .avatar { display: none; }
