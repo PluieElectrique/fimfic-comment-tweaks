@@ -7,23 +7,8 @@
 // @downloadURL    https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
 // @updateURL      https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
 // @match          *://www.fimfiction.net/*
-// @grant          unsafeWindow
 // @run-at         document-end
 // ==/UserScript==
-
-let App = unsafeWindow.App;
-let CommentListController = unsafeWindow.CommentListController;
-
-function smuggle(f) {
-    if (typeof exportFunction !== "function") {
-        return f;
-    } else {
-        // Firefox requires us to export any functions which will be called by code in the page's
-        // scope (this includes functions passed as callbacks). Functions which are called by
-        // exported functions do not have to be exported.
-        return exportFunction(f, window);
-    }
-}
 
 function createMiddot() {
     let middot = document.createElement("b");
@@ -133,14 +118,14 @@ let commentControllerShell = {
     commentMetadata: {},
 
     // Methods that shadow existing methods
-    getComment: smuggle(function(id) {
+    getComment: function(id) {
         let comment = document.getElementById("comment_" + id);
         if (comment !== null) {
             return new Promise(f => f(comment));
         }
 
         return this.prototype.getComment.call(this, id).then(
-            smuggle(comment => {
+            comment => {
                 let meta = this.commentMetadata[id];
                 if (meta !== undefined) {
                     // Rewrite comment index
@@ -148,23 +133,23 @@ let commentControllerShell = {
                 }
                 this.rewriteQuoteLinks(comment);
                 return comment;
-            })
+            }
         );
-    }),
+    },
 
-    setupQuotes: smuggle(function() {
+    setupQuotes: function() {
         this.prototype.setupQuotes.call(this);
         this.rewriteQuoteLinks(this.comment_list);
         this.storeComments();
         setupCollapseButtons();
-    }),
+    },
 
-    goToPage: smuggle(function(num) {
+    goToPage: function(num) {
         this.storeComments();
         this.prototype.goToPage.call(this, num);
-    }),
+    },
 
-    beginShowQuote: smuggle(function(quoteCallback) {
+    beginShowQuote: function(quoteCallback) {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
 
@@ -193,9 +178,9 @@ let commentControllerShell = {
         return function() {
             cancel = true;
         };
-    }),
+    },
 
-    expandQuote: smuggle(function(quoteLink) {
+    expandQuote: function(quoteLink) {
         let addComment = comment => {
             // Add middot after username in .meta to separate it from the index
             fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
@@ -254,7 +239,7 @@ let commentControllerShell = {
             quoteLink.removeEventListener("mouseout", stopPropagation);
             forwardHide(quoteLink, -1);
         }
-    }),
+    },
 
     // Extra methods for ease of accessing `this`
     storeComments: function() {
