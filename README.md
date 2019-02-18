@@ -4,19 +4,23 @@ Userscript for enhanced Fimfiction comments. Inspired by [4chan X](https://www.4
 
 ## Features
 
-### Enhancements
-* Increased comment width (by decreasing right padding)
-* Expand comments as fully collapsed
-* Don't show comment when hovering on an expanded link
-* Don't allow expanded child to expand parent
-* Forward hiding of comments
-* Collapse comments and their children
-* No 150ms delay to show comment when hovering over quote link
-* Show username in expanded quote
-* Show index alongside username for cross-page quote links
+* Comment collapsing: Collapse a comment and all of its descendants (any comment which replies to it, any reply to those replies, and so on)
+* Forward hiding: Clicking and expanding a backlink (quote link in the header of a comment) will hide the original comment
 
-### Bug fixes (for Fimfiction)
-* Fix header in hovered/expanded comments (show author and correct index)
+### Tweaks
+
+* Expanded comments show the username in the header
+* When possible, cross-page quote links show the username and comment index instead of the comment ID
+* When possible, cross-page comments show the comment index in the header instead of the comment ID
+* Comments expanded from backlinks are grouped together below the comment header (Normally, expanded comments are inserted after their backlinks, which can push down unexpanded backlinks)
+* No infinite expanding: Expanded comments cannot expand quote links which point to any of their ancestors
+* Hovering on an expanded link does not show its comment
+* Expanded comments do not expand with their own expanded comments
+
+### Cosmetic
+
+* Increased comment width (by decreasing right padding) for deeper nesting
+* Removed 150ms delay to show comment when hovering over quote link
 
 ## Legal
 
