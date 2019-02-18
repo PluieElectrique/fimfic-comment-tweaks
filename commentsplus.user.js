@@ -25,6 +25,12 @@ function smuggle(f) {
     }
 }
 
+function createMiddot() {
+    let middot = document.createElement("b");
+    middot.textContent = "\u00b7";
+    return middot;
+}
+
 // Clone a comment unhidden and without expanded links and collapse button/middot
 function cloneComment(comment) {
     // Remove quotes to avoid cloning them
@@ -366,10 +372,4 @@ if (storyComments !== null) {
         document.body.appendChild(container);
         commentController.quote_container = container;
     }
-}
-
-function createMiddot() {
-    let middot = document.createElement("b");
-    middot.textContent = "\u00b7";
-    return middot;
 }
