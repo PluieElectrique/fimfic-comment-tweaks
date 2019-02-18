@@ -7,7 +7,7 @@
 // @downloadURL    https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
 // @updateURL      https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
 // @match          *://www.fimfiction.net/*
-// @run-at         document-end
+// @run-at         document-idle
 // ==/UserScript==
 
 function createMiddot() {
@@ -124,21 +124,19 @@ let commentControllerShell = {
             return new Promise(f => f(comment));
         }
 
-        return this.prototype.getComment.call(this, id).then(
-            comment => {
-                let meta = this.commentMetadata[id];
-                if (meta !== undefined) {
-                    // Rewrite comment index
-                    comment.querySelector(`[href='#comment/${id}']`).textContent = "#" + meta.index;
-                }
-                this.rewriteQuoteLinks(comment);
-                return comment;
+        return CommentListController.prototype.getComment.call(this, id).then(comment => {
+            let meta = this.commentMetadata[id];
+            if (meta !== undefined) {
+                // Rewrite comment index
+                comment.querySelector(`[href='#comment/${id}']`).textContent = "#" + meta.index;
             }
-        );
+            this.rewriteQuoteLinks(comment);
+            return comment;
+        });
     },
 
     setupQuotes: function() {
-        this.prototype.setupQuotes.call(this);
+        CommentListController.prototype.setupQuotes.call(this);
         this.rewriteQuoteLinks(this.comment_list);
         this.storeComments();
         setupCollapseButtons();
@@ -146,7 +144,7 @@ let commentControllerShell = {
 
     goToPage: function(num) {
         this.storeComments();
-        this.prototype.goToPage.call(this, num);
+        CommentListController.prototype.goToPage.call(this, num);
     },
 
     beginShowQuote: function(quoteCallback) {
@@ -292,10 +290,7 @@ let commentControllerShell = {
                 quoteLink.textContent = `${meta.author} (#${meta.index})`;
             }
         }
-    },
-
-    // For ease of calling methods on the prototype
-    prototype: CommentListController.prototype
+    }
 };
 
 let cssCode = `
@@ -310,56 +305,66 @@ let cssCode = `
 .comment.cplus--collapsed .comment_information:after { height: 0; }
 `;
 
-let storyComments = document.getElementById("story_comments");
-if (storyComments !== null) {
-    let commentController = App.GetControllerFromElement(storyComments);
-    Object.assign(commentController, commentControllerShell);
+function init() {
+    let storyComments = document.getElementById("story_comments");
+    if (storyComments !== null) {
+        let commentController = App.GetControllerFromElement(storyComments);
+        Object.assign(commentController, commentControllerShell);
 
-    setupCollapseButtons();
+        setupCollapseButtons();
 
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".cplus--collapse-button",
-        "click",
-        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
-    );
+        fQuery.addScopedEventListener(
+            commentController.comment_list,
+            ".cplus--collapse-button",
+            "click",
+            evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+        );
 
-    // Remove the 150ms delay to show a comment when hovering on a quote link
-    let cancelShowQuote = null;
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".comment_quote_link",
-        "mouseover",
-        evt => {
-            evt.stopPropagation();
-            cancelShowQuote = commentController.beginShowQuote(evt.target);
-        }
-    );
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".comment_quote_link",
-        "mouseout",
-        evt => {
-            if (cancelShowQuote !== null) {
-                cancelShowQuote();
-                cancelShowQuote = null;
+        // Remove the 150ms delay to show a comment when hovering on a quote link
+        let cancelShowQuote = null;
+        fQuery.addScopedEventListener(
+            commentController.comment_list,
+            ".comment_quote_link",
+            "mouseover",
+            evt => {
+                evt.stopPropagation();
+                cancelShowQuote = commentController.beginShowQuote(evt.target);
             }
-            evt.stopPropagation();
-            commentController.endShowQuote();
+        );
+        fQuery.addScopedEventListener(
+            commentController.comment_list,
+            ".comment_quote_link",
+            "mouseout",
+            evt => {
+                if (cancelShowQuote !== null) {
+                    cancelShowQuote();
+                    cancelShowQuote = null;
+                }
+                evt.stopPropagation();
+                commentController.endShowQuote();
+            }
+        );
+
+        let style = document.createElement("style");
+        style.type = "text/css";
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+
+        // quote_container is used by beginShowQuote to store the hovered quote (when there is one).
+        // In the original code, it's checked for on each call. Here, we create it at init.
+        if (commentController.quote_container === null) {
+            let container = document.createElement("div");
+            container.className = "quote_container";
+            document.body.appendChild(container);
+            commentController.quote_container = container;
         }
-    );
-
-    let style = document.createElement("style");
-    style.type = "text/css";
-    style.textContent = cssCode;
-    document.head.appendChild(style);
-
-    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
-    // the original code, it's checked for on each call. Here, we create it at initialization.
-    if (commentController.quote_container === null) {
-        let container = document.createElement("div");
-        container.className = "quote_container";
-        document.body.appendChild(container);
-        commentController.quote_container = container;
     }
+}
+
+// Despite the @run-at option, Firefox sometimes runs the userscript before the Fimfiction JS, which
+// causes errors. So, we wait for the page to be fully loaded.
+if (document.readyState == "complete") {
+    init();
+} else {
+    window.addEventListener("load", init);
 }
