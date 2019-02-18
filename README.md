@@ -25,6 +25,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 
 ### Cosmetic
 
+* Expanded quote links are grayed out
 * Increased comment width (by decreasing right padding) for deeper nesting
 * Removed 150ms delay to show comment when hovering over quote link
 

@@ -190,6 +190,7 @@ let commentControllerShell = {
 
             quoteLink.addEventListener("mouseover", stopPropagation);
             quoteLink.addEventListener("mouseout", stopPropagation);
+            quoteLink.classList.add("cplus--expanded-link");
 
             // Prevent the expansion of the parent from the child quote
             let parentId = fQuery.closestParent(quoteLink, ".comment").dataset.comment_id;
@@ -240,6 +241,7 @@ let commentControllerShell = {
             fQuery.removeElement(inlineComment);
             quoteLink.removeEventListener("mouseover", stopPropagation);
             quoteLink.removeEventListener("mouseout", stopPropagation);
+            quoteLink.classList.remove("cplus--expanded-link");
             forwardHide(quoteLink, -1);
         }
     },
@@ -303,6 +305,7 @@ let cssCode = `
 .comment.cplus--collapsed .comment_callbacks { display: none; }
 .comment.cplus--collapsed .comment_data { display: none; }
 .comment.cplus--collapsed .comment_information:after { height: 0; }
+.cplus--expanded-link { opacity: 0.7; }
 `;
 
 function init() {
