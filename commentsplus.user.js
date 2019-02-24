@@ -151,10 +151,7 @@ let commentControllerShell = {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
 
-        let cancel = false;
         this.getComment(quoteCallback.dataset.comment_id).then(comment => {
-            if (cancel) return;
-
             this.quote_container.classList.remove("hidden");
             if (this.quote_container.firstChild !== null) {
                 fQuery.removeElement(this.quote_container.firstChild);
@@ -172,10 +169,6 @@ let commentControllerShell = {
 
             App.DispatchEvent(this.quote_container, "loadVisibleImages");
         });
-
-        return function() {
-            cancel = true;
-        };
     },
 
     expandQuote: function(quoteLink) {
@@ -319,33 +312,16 @@ function init() {
             evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
         );
 
-        // Remove the 150ms delay to show a comment when hovering on a quote link
-        let cancelShowQuote = null;
         fQuery.addScopedEventListener(
             commentController.comment_list,
             ".comment_quote_link",
             "mouseover",
             evt => {
+                // Remove 150ms delay by preventing the normal event listener from firing
                 evt.stopPropagation();
                 if (!evt.target.classList.contains("cplus--expanded-link")) {
-                    cancelShowQuote = commentController.beginShowQuote(evt.target);
+                    commentController.beginShowQuote(evt.target);
                 }
-            }
-        );
-        fQuery.addScopedEventListener(
-            commentController.comment_list,
-            ".comment_quote_link",
-            "mouseout",
-            evt => {
-                evt.stopPropagation();
-                if (!evt.target.classList.contains("cplus--expanded-link")) {
-                    if (cancelShowQuote !== null) {
-                        cancelShowQuote();
-                        cancelShowQuote = null;
-                    }
-                    commentController.endShowQuote();
-                }
-
             }
         );
 
