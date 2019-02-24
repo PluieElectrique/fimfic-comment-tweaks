@@ -157,56 +157,45 @@ let commentControllerShell = {
             return;
         }
 
-        let insertComment = comment => {
-            // is_mobile is a global boolean declared in an inline script in <head>. So, it seems
-            // detection of mobile browsers is done server side (probably through user agent).
-            if (!is_mobile) {
-                // Add middot after username in .meta to separate it from the index. On mobile, the
-                // username is `display: block;`, so we don't need a separator.
-                fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
-            }
-
-            comment.classList.add("inline-quote");
-            quoteLink.classList.add("cplus--expanded-link");
-
-            if (quoteLink.classList.contains("comment_callback")) {
-                // Search backwards through .comment_callbacks for the last quote link, and place
-                // this comment after it. This keeps quote links together at the top and orders
-                // expanded comments from most to least recently expanded.
-                let lastLink = quoteLink.parentElement.lastElementChild;
-                while (lastLink.tagName !== "A") {
-                    lastLink = lastLink.previousElementSibling;
-                }
-                fQuery.insertAfter(lastLink, comment);
-            } else {
-                fQuery.insertAfter(quoteLink, comment);
-            }
-        };
-
         this.endShowQuote();
 
-        let id = quoteLink.dataset.comment_id;
+        let linkedId = quoteLink.dataset.comment_id;
+        let expandedComment = quoteLink.parentNode.querySelector(
+            `.comment[data-comment_id='${linkedId}']`
+        );
+        if (expandedComment === null) {
+            this.getComment(linkedId).then(comment => {
+                let clone = cloneComment(comment);
+                markParentLink(parent, clone);
+                clone.classList.add("inline-quote");
 
-        let inlineComment = quoteLink.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
-        if (inlineComment === null) {
-            // If this comment is currently in the quote container (i.e. it's being shown as the
-            // user hovers over a quote link), reuse it
-            let containerComment = this.quote_container.firstChild;
-            if (containerComment === null) {
-                this.getComment(id).then(comment => {
-                    let clone = cloneComment(comment);
-                    markParentLink(parent, clone);
-                    insertComment(clone);
-                    this.forwardHide(quoteLink, 1);
-                });
-            } else {
-                fQuery.removeElement(containerComment);
-                insertComment(containerComment);
                 this.forwardHide(quoteLink, 1);
-            }
+                quoteLink.classList.add("cplus--expanded-link");
+
+                // is_mobile is a global declared in an inline script in <head>. It seems detection
+                // of mobile browsers is done server side (probably through user agent).
+                if (!is_mobile) {
+                    // Add middot after username in .meta to separate it from the index. On mobile,
+                    // the username is `display: block;`, so we don't need a separator.
+                    fQuery.insertAfter(clone.querySelector(".meta > .name"), createMiddot());
+                }
+
+                if (quoteLink.classList.contains("comment_callback")) {
+                    // Search backwards through .comment_callbacks for the last quote link, and
+                    // place this comment after it. This keeps quote links together at the top and
+                    // orders expanded comments from most to least recently expanded.
+                    let lastLink = quoteLink.parentElement.lastElementChild;
+                    while (lastLink.tagName !== "A") {
+                        lastLink = lastLink.previousElementSibling;
+                    }
+                    fQuery.insertAfter(lastLink, clone);
+                } else {
+                    fQuery.insertAfter(quoteLink, clone);
+                }
+            });
         } else {
             // The comment is already expanded, so remove it
-            fQuery.removeElement(inlineComment);
+            fQuery.removeElement(expandedComment);
             quoteLink.classList.remove("cplus--expanded-link");
             this.forwardHide(quoteLink, -1);
         }
@@ -261,8 +250,11 @@ let commentControllerShell = {
         }
     },
 
-    // If the link is a callback, update the expansion count of its comment and hide/unhide if needed.
     forwardHide: function(quoteLink, change) {
+        if (change !== 1 && change !== -1) {
+            throw new Error("Change to expand count must be 1 or -1");
+        }
+
         // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
         // forward hide when expanding callbacks. Non-callbacks expand older comments. So, in DESC
         // order (newest to oldest), we forward hide when expanding non-callbacks.
@@ -270,10 +262,6 @@ let commentControllerShell = {
         let isASC = this.order === "ASC";
         if (isCallback !== isASC) {
             return;
-        }
-
-        if (change !== 1 && change !== -1) {
-            throw new Error("Change to expand count must be 1 or -1");
         }
 
         let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
