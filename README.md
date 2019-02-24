@@ -11,14 +11,14 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 ## Features
 
 * Comment collapsing: Collapse a comment and all of its descendants (any comment which replies to it, any reply to those replies, and so on)
-* Forward hiding: Clicking and expanding a backlink (quote link in the header of a comment) will hide the original comment
+* Forward hiding: Clicking and expanding a callback (quote link in the header of a comment) will hide the original comment
 
 ### Tweaks
 
 * Expanded comments show the username in the header
 * When possible, cross-page quote links show the username and comment index instead of the comment ID
 * When possible, cross-page comments show the comment index in the header instead of the comment ID
-* Comments expanded from backlinks are grouped together below the comment header (Normally, expanded comments are inserted after their backlinks, which can push down unexpanded backlinks)
+* Comments expanded from callbacks are grouped together below the comment header (Normally, expanded comments are inserted after their callbacks, which can push down unexpanded callbacks)
 * No infinite expanding: Expanded comments cannot expand quote links which point to any of their ancestors
 * Hovering on an expanded link does not show its comment
 * Expanded comments do not expand with their own expanded comments
