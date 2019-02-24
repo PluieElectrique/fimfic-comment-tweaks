@@ -157,7 +157,7 @@ let commentControllerShell = {
             return;
         }
 
-        let addComment = comment => {
+        let insertComment = comment => {
             // is_mobile is a global boolean declared in an inline script in <head>. So, it seems
             // detection of mobile browsers is done server side (probably through user agent).
             if (!is_mobile) {
@@ -196,12 +196,12 @@ let commentControllerShell = {
                 this.getComment(id).then(comment => {
                     let clone = cloneComment(comment);
                     markParentLink(parent, clone);
-                    addComment(clone);
+                    insertComment(clone);
                     forwardHide(quoteLink, 1);
                 });
             } else {
                 fQuery.removeElement(containerComment);
-                addComment(containerComment);
+                insertComment(containerComment);
                 forwardHide(quoteLink, 1);
             }
         } else {
