@@ -121,17 +121,17 @@ let commentControllerShell = {
         CommentListController.prototype.goToPage.call(this, num);
     },
 
-    beginShowQuote: function(quoteCallback) {
+    beginShowQuote: function(quoteLink) {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
 
-        this.getComment(quoteCallback.dataset.comment_id).then(comment => {
+        this.getComment(quoteLink.dataset.comment_id).then(comment => {
             this.quote_container.classList.remove("hidden");
             if (this.quote_container.firstChild !== null) {
                 fQuery.removeElement(this.quote_container.firstChild);
             }
 
-            let parent = fQuery.closestParent(quoteCallback, ".comment");
+            let parent = fQuery.closestParent(quoteLink, ".comment");
 
             let clone = cloneComment(comment);
             markParentLink(parent, clone);
@@ -139,7 +139,7 @@ let commentControllerShell = {
 
             let parentRect = parent.getBoundingClientRect();
             let style = this.quote_container.style;
-            style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 23 + "px";
+            style.top = quoteLink.getBoundingClientRect().top + fQuery.scrollTop() + 23 + "px";
             style.left = parentRect.left - 20 + "px";
             style.width = parentRect.width + 40 + "px";
 
