@@ -139,7 +139,7 @@ let commentControllerShell = {
 
             let parentRect = parent.getBoundingClientRect();
             let style = this.quote_container.style;
-            style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 20 + "px";
+            style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 23 + "px";
             style.left = parentRect.left - 20 + "px";
             style.width = parentRect.width + 40 + "px";
 
