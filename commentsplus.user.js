@@ -166,18 +166,21 @@ let commentControllerShell = {
                 fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
             }
 
+            comment.classList.add("inline-quote");
             quoteLink.classList.add("cplus--expanded-link");
 
-            comment.classList.add("inline-quote");
-
-            // Search backwards through .comment_callbacks for the last quote link, and place this
-            // comment after it. This keeps quote links together at the top and orders expanded
-            // comments from most to least recently expanded.
-            let lastLink = quoteLink.parentElement.lastElementChild;
-            while (lastLink.tagName !== "A") {
-                lastLink = lastLink.previousElementSibling;
+            if (quoteLink.classList.contains("comment_callback")) {
+                // Search backwards through .comment_callbacks for the last quote link, and place
+                // this comment after it. This keeps quote links together at the top and orders
+                // expanded comments from most to least recently expanded.
+                let lastLink = quoteLink.parentElement.lastElementChild;
+                while (lastLink.tagName !== "A") {
+                    lastLink = lastLink.previousElementSibling;
+                }
+                fQuery.insertAfter(lastLink, comment);
+            } else {
+                fQuery.insertAfter(quoteLink, comment);
             }
-            fQuery.insertAfter(lastLink, comment);
         };
 
         this.endShowQuote();
