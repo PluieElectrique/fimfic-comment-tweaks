@@ -59,6 +59,15 @@ function cloneComment(comment) {
     return clone;
 }
 
+// Mark the quote link to the parent as a visual cue and to prevent infinite nesting
+function markParentLink(parent, child) {
+    let parentId = parent.dataset.comment_id;
+    let childLink = child.querySelector(`.comment_quote_link[data-comment_id='${parentId}']`);
+    if (childLink !== null) {
+        childLink.classList.add("cplus--parent-link");
+    }
+}
+
 // If the link is a callback, update the expansion count of its comment and hide/unhide if needed.
 function forwardHide(quoteLink, change) {
     if (!quoteLink.parentElement.classList.contains("comment_callbacks")) return;
@@ -107,11 +116,6 @@ function collapseCommentTree(comment, collapse) {
     }
 }
 
-// Stop propagation of mouse events on comment links
-function stopPropagation(evt) {
-    evt.stopPropagation();
-}
-
 // An object that will be assigned onto the real comment controller
 let commentControllerShell = {
     // Map from comment number (`data-comment_id`) to { author, index }
@@ -157,25 +161,29 @@ let commentControllerShell = {
                 fQuery.removeElement(this.quote_container.firstChild);
             }
 
-            this.quote_container.appendChild(cloneComment(comment));
+            let parent = fQuery.closestParent(quoteCallback, ".comment");
 
-            let parentCommentRect = fQuery
-                .closestParent(quoteCallback, ".comment")
-                .getBoundingClientRect();
+            let clone = cloneComment(comment);
+            markParentLink(parent, clone);
+            this.quote_container.appendChild(clone);
+
+            let parentRect = parent.getBoundingClientRect();
             let style = this.quote_container.style;
             style.top = quoteCallback.getBoundingClientRect().top + fQuery.scrollTop() + 20 + "px";
-            style.left = parentCommentRect.left - 20 + "px";
-            style.width = parentCommentRect.width + 40 + "px";
+            style.left = parentRect.left - 20 + "px";
+            style.width = parentRect.width + 40 + "px";
 
             App.DispatchEvent(this.quote_container, "loadVisibleImages");
         });
     },
 
     expandQuote: function(quoteLink) {
-        let parentComment = fQuery.closestParent(quoteLink, ".comment");
+        let parent = fQuery.closestParent(quoteLink, ".comment");
 
-        // Don't expand links of collapsed comments
-        if (parentComment.classList.contains("cplus--collapsed")) {
+        // Don't expand parent links or links of collapsed comments
+        let isCollapsed = parent.classList.contains("cplus--collapsed");
+        let isParentLink = quoteLink.classList.contains("cplus--parent-link");
+        if (isCollapsed || isParentLink) {
             return;
         }
 
@@ -190,21 +198,6 @@ let commentControllerShell = {
 
             quoteLink.classList.add("cplus--expanded-link");
 
-            // Prevent the expansion of the parent from the child quote
-            let parentId = parentComment.dataset.comment_id;
-            let childLink = comment.querySelector(
-                `.comment_callback[data-comment_id='${parentId}']`
-            );
-            // Foreign comments currently don't have callbacks
-            if (childLink !== null) {
-                childLink.style.textDecoration = "underline";
-                childLink.addEventListener("mouseover", stopPropagation);
-                childLink.addEventListener("mouseout", stopPropagation);
-                childLink.addEventListener("click", evt => {
-                    evt.stopPropagation();
-                    evt.preventDefault();
-                });
-            }
             comment.classList.add("inline-quote");
 
             // Search backwards through .comment_callbacks for the last quote link, and place this
@@ -221,13 +214,17 @@ let commentControllerShell = {
 
         let id = quoteLink.dataset.comment_id;
 
+        // Check to see if this quote link is already expanded
         let inlineComment = quoteLink.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
         if (inlineComment === null) {
+            // If this comment is currently in the quote container (i.e. it's being shown as the
+            // user hovers over a quote link), reuse it
             let containerComment = this.quote_container.firstChild;
-
             if (containerComment === null) {
                 this.getComment(id).then(comment => {
-                    addComment(cloneComment(comment));
+                    let clone = cloneComment(comment);
+                    markParentLink(parent, clone);
+                    addComment(clone);
                     forwardHide(quoteLink, 1);
                 });
             } else {
@@ -302,6 +299,7 @@ let cssCode = `
 .comment.cplus--collapsed .comment_data { display: none; }
 .comment.cplus--collapsed .comment_information:after { height: 0; }
 .cplus--expanded-link { opacity: 0.7; }
+.cplus--parent-link { text-decoration: underline; }
 `;
 
 function init() {
@@ -326,12 +324,14 @@ function init() {
             evt => {
                 // Remove 150ms delay by preventing the normal event listener from firing
                 evt.stopPropagation();
-                // Don't show popup quote for expanded links or links of collapsed comments
-                let expanded = evt.target.classList.contains("cplus--expanded-link");
-                let collapsed = fQuery
+                // Don't show popup quote for expanded links, links of collapsed comments, or links
+                // the parent comment
+                let isExpanded = evt.target.classList.contains("cplus--expanded-link");
+                let isCollapsed = fQuery
                     .closestParent(evt.target, ".comment")
                     .classList.contains("cplus--collapsed");
-                if (!expanded && !collapsed) {
+                let isParentLink = evt.target.classList.contains("cplus--parent-link");
+                if (!isExpanded && !isCollapsed && !isParentLink) {
                     commentController.beginShowQuote(evt.target);
                 }
             }
