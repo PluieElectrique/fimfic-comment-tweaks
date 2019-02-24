@@ -40,7 +40,6 @@ function init() {
     }
 
     let style = document.createElement("style");
-    style.type = "text/css";
     style.textContent = cplusCSS;
     document.head.appendChild(style);
 
