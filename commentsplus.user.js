@@ -184,7 +184,6 @@ let commentControllerShell = {
 
         let id = quoteLink.dataset.comment_id;
 
-        // Check to see if this quote link is already expanded
         let inlineComment = quoteLink.parentNode.querySelector(`.comment[data-comment_id='${id}']`);
         if (inlineComment === null) {
             // If this comment is currently in the quote container (i.e. it's being shown as the
@@ -203,6 +202,7 @@ let commentControllerShell = {
                 forwardHide(quoteLink, 1);
             }
         } else {
+            // The comment is already expanded, so remove it
             fQuery.removeElement(inlineComment);
             quoteLink.classList.remove("cplus--expanded-link");
             forwardHide(quoteLink, -1);
