@@ -188,8 +188,6 @@ let commentControllerShell = {
                 fQuery.insertAfter(comment.querySelector(".meta > .name"), createMiddot());
             }
 
-            quoteLink.addEventListener("mouseover", stopPropagation);
-            quoteLink.addEventListener("mouseout", stopPropagation);
             quoteLink.classList.add("cplus--expanded-link");
 
             // Prevent the expansion of the parent from the child quote
@@ -239,8 +237,6 @@ let commentControllerShell = {
             }
         } else {
             fQuery.removeElement(inlineComment);
-            quoteLink.removeEventListener("mouseover", stopPropagation);
-            quoteLink.removeEventListener("mouseout", stopPropagation);
             quoteLink.classList.remove("cplus--expanded-link");
             forwardHide(quoteLink, -1);
         }
@@ -331,7 +327,9 @@ function init() {
             "mouseover",
             evt => {
                 evt.stopPropagation();
-                cancelShowQuote = commentController.beginShowQuote(evt.target);
+                if (!evt.target.classList.contains("cplus--expanded-link")) {
+                    cancelShowQuote = commentController.beginShowQuote(evt.target);
+                }
             }
         );
         fQuery.addScopedEventListener(
@@ -339,12 +337,15 @@ function init() {
             ".comment_quote_link",
             "mouseout",
             evt => {
-                if (cancelShowQuote !== null) {
-                    cancelShowQuote();
-                    cancelShowQuote = null;
-                }
                 evt.stopPropagation();
-                commentController.endShowQuote();
+                if (!evt.target.classList.contains("cplus--expanded-link")) {
+                    if (cancelShowQuote !== null) {
+                        cancelShowQuote();
+                        cancelShowQuote = null;
+                    }
+                    commentController.endShowQuote();
+                }
+
             }
         );
 
