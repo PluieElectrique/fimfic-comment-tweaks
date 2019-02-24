@@ -295,7 +295,8 @@ let cssCode = `
 .comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
 .comment.cplus--collapsed .author > .avatar { display: none; }
-.comment.cplus--collapsed .comment_callbacks { display: none; }
+.comment.cplus--collapsed .comment_callbacks > a { opacity: 0.7; }
+.comment.cplus--collapsed .comment_callbacks > div { display: none; }
 .comment.cplus--collapsed .comment_data { display: none; }
 .comment.cplus--collapsed .comment_information:after { height: 0; }
 .cplus--expanded-link { opacity: 0.7; }
