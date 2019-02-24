@@ -172,6 +172,13 @@ let commentControllerShell = {
     },
 
     expandQuote: function(quoteLink) {
+        let parentComment = fQuery.closestParent(quoteLink, ".comment");
+
+        // Don't expand links of collapsed comments
+        if (parentComment.classList.contains("cplus--collapsed")) {
+            return;
+        }
+
         let addComment = comment => {
             // is_mobile is a global boolean declared in an inline script in <head>. So, it seems
             // detection of mobile browsers is done server side (probably through user agent).
@@ -184,7 +191,7 @@ let commentControllerShell = {
             quoteLink.classList.add("cplus--expanded-link");
 
             // Prevent the expansion of the parent from the child quote
-            let parentId = fQuery.closestParent(quoteLink, ".comment").dataset.comment_id;
+            let parentId = parentComment.dataset.comment_id;
             let childLink = comment.querySelector(
                 `.comment_callback[data-comment_id='${parentId}']`
             );
@@ -319,7 +326,12 @@ function init() {
             evt => {
                 // Remove 150ms delay by preventing the normal event listener from firing
                 evt.stopPropagation();
-                if (!evt.target.classList.contains("cplus--expanded-link")) {
+                // Don't show popup quote for expanded links or links of collapsed comments
+                let expanded = evt.target.classList.contains("cplus--expanded-link");
+                let collapsed = fQuery
+                    .closestParent(evt.target, ".comment")
+                    .classList.contains("cplus--collapsed");
+                if (!expanded && !collapsed) {
                     commentController.beginShowQuote(evt.target);
                 }
             }
