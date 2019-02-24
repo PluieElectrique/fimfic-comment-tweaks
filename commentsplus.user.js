@@ -197,18 +197,18 @@ let commentControllerShell = {
                     let clone = cloneComment(comment);
                     markParentLink(parent, clone);
                     insertComment(clone);
-                    forwardHide(quoteLink, 1);
+                    this.forwardHide(quoteLink, 1);
                 });
             } else {
                 fQuery.removeElement(containerComment);
                 insertComment(containerComment);
-                forwardHide(quoteLink, 1);
+                this.forwardHide(quoteLink, 1);
             }
         } else {
             // The comment is already expanded, so remove it
             fQuery.removeElement(inlineComment);
             quoteLink.classList.remove("cplus--expanded-link");
-            forwardHide(quoteLink, -1);
+            this.forwardHide(quoteLink, -1);
         }
     },
 
@@ -259,6 +259,33 @@ let commentControllerShell = {
                 quoteLink.textContent = `${meta.author} (#${meta.index})`;
             }
         }
+    },
+
+    // If the link is a callback, update the expansion count of its comment and hide/unhide if needed.
+    forwardHide: function(quoteLink, change) {
+        // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
+        // forward hide when expanding callbacks. Non-callbacks expand older comments. So, in DESC
+        // order (newest to oldest), we forward hide when expanding non-callbacks.
+        let isCallback = quoteLink.classList.contains("comment_callback");
+        let isASC = this.order === "ASC";
+        if (isCallback !== isASC) {
+            return;
+        }
+
+        if (change !== 1 && change !== -1) {
+            throw new Error("Change to expand count must be 1 or -1");
+        }
+
+        let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
+        let newCount = Number(comment.dataset.expandCount || 0) + change;
+        if (newCount < 0) {
+            throw new Error("Expand count cannot be less than 0");
+        } else if (newCount === 0) {
+            comment.classList.remove("cplus--forward-hidden");
+        } else if (newCount === 1) {
+            comment.classList.add("cplus--forward-hidden");
+        }
+        comment.dataset.expandCount = newCount;
     }
 };
 
@@ -273,25 +300,6 @@ function setupCollapseButtons() {
         collapseButton.appendChild(minus);
         fQuery.insertAfter(metaName, collapseButton);
     }
-}
-
-// If the link is a callback, update the expansion count of its comment and hide/unhide if needed.
-function forwardHide(quoteLink, change) {
-    if (!quoteLink.parentElement.classList.contains("comment_callbacks")) return;
-    if (change !== 1 && change !== -1) {
-        throw new Error("Change to expand count must be 1 or -1");
-    }
-
-    let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
-    let newCount = Number(comment.dataset.expandCount || 0) + change;
-    if (newCount < 0) {
-        throw new Error("Expand count cannot be less than 0");
-    } else if (newCount === 0) {
-        comment.classList.remove("cplus--forward-hidden");
-    } else if (newCount === 1) {
-        comment.classList.add("cplus--forward-hidden");
-    }
-    comment.dataset.expandCount = newCount;
 }
 
 function toggleCollapseCommentTree(comment) {

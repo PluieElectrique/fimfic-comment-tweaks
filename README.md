@@ -11,7 +11,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 ## Features
 
 * Comment collapsing: Collapse a comment and all of its descendants (any comment which replies to it, any reply to those replies, and so on)
-* Forward hiding: Clicking and expanding a callback (quote link in the header of a comment) will hide the original comment
+* Forward hiding: Clicking and expanding a quote link to a "forward" comment will hide the original comment (whether a link is forward or not depends on the comment order)
 
 ### Tweaks
 
