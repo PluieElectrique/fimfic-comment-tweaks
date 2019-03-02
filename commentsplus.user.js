@@ -22,7 +22,6 @@ let cplusCSS = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
-.comment .data { padding-right: 0.3rem; }
 .comment.cplus--forward-hidden { display: none; }
 .comment.cplus--collapsed .author > .avatar { display: none; }
 .comment.cplus--collapsed .comment_callbacks > a { opacity: 0.7; }
