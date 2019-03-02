@@ -21,15 +21,15 @@ if (document.readyState == "complete") {
 let cplusCSS = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
-@media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
-.comment.cplus--forward-hidden { display: none; }
-.comment.cplus--collapsed .author > .avatar { display: none; }
-.comment.cplus--collapsed .comment_callbacks > a { opacity: 0.7; }
-.comment.cplus--collapsed .comment_callbacks > div { display: none; }
-.comment.cplus--collapsed .comment_data { display: none; }
-.comment.cplus--collapsed .comment_information:after { height: 0; }
+.cplus--collapsed .author > .avatar { display: none; }
+.cplus--collapsed .comment_callbacks > a { opacity: 0.7; }
+.cplus--collapsed .comment_callbacks > div { display: none; }
+.cplus--collapsed .comment_data { display: none; }
+.cplus--collapsed .comment_information:after { height: 0; }
 .cplus--expanded-link { opacity: 0.7; }
+.cplus--forward-hidden { display: none; }
 .cplus--parent-link { text-decoration: underline; }
+@media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
 
 function init() {
