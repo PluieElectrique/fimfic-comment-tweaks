@@ -26,7 +26,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 ### Cosmetic
 
 * Expanded quote links are grayed out
-* Quote links to the parent are underlined
+* When there are multiple quote links in an child comment, the link to the parent comment is underlined
 * Removed 150ms delay to show comment when hovering over quote link
 
 ## Legal

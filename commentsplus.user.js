@@ -28,7 +28,7 @@ let cplusCSS = `
 .cplus--collapsed-comment .comment_information:after { height: 0; }
 .cplus--expanded-link { opacity: 0.7; }
 .cplus--forward-hidden { display: none; }
-.cplus--parent-link { text-decoration: underline; }
+.cplus--parent-link-highlight { text-decoration: underline; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
 
@@ -63,12 +63,8 @@ function init() {
             evt.stopPropagation();
             // Don't show popup quote for expanded links, links of collapsed comments, or links to
             // the parent comment
-            let isExpanded = evt.target.classList.contains("cplus--expanded-link");
-            let isCollapsed = fQuery
-                .closestParent(evt.target, ".comment")
-                .classList.contains("cplus--collapsed-comment");
-            let isParentLink = evt.target.classList.contains("cplus--parent-link");
-            if (!isExpanded && !isCollapsed && !isParentLink) {
+            let linkStatus = getQuoteLinkStatus(evt.target);
+            if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
                 commentController.beginShowQuote(evt.target);
             }
         }
@@ -150,9 +146,8 @@ let commentControllerShell = {
         let parent = fQuery.closestParent(quoteLink, ".comment");
 
         // Don't expand parent links or links of collapsed comments
-        let isParentLink = quoteLink.classList.contains("cplus--parent-link");
-        let isCollapsed = parent.classList.contains("cplus--collapsed-comment");
-        if (isCollapsed || isParentLink) {
+        let linkStatus = getQuoteLinkStatus(quoteLink);
+        if (linkStatus.parentCollapsed || linkStatus.isParentLink) {
             return;
         }
 
@@ -341,13 +336,35 @@ function cloneComment(comment) {
     return clone;
 }
 
-// Mark the quote link to the parent as a visual cue and to prevent infinite nesting
-function markParentLink(parent, child) {
-    let parentId = parent.dataset.comment_id;
-    let childLink = child.querySelector(`.comment_quote_link[data-comment_id='${parentId}']`);
-    if (childLink !== null) {
-        childLink.classList.add("cplus--parent-link");
+// Disable links to the parent comment to prevent infinite nesting. Also highlight the link if there
+// are other links in its section.
+function markParentLink(parentComment, childComment) {
+    let parentId = parentComment.dataset.comment_id;
+    let linkToParent = childComment.querySelector(
+        `.comment_quote_link[data-comment_id='${parentId}']`
+    );
+    if (linkToParent !== null) {
+        // If there are other links in this quote link's section (comment data or callbacks), mark
+        // this link for visibility
+        let otherLink = fQuery
+            .closestParent(linkToParent, ".comment_data, .comment_callbacks")
+            .querySelector(`.comment_quote_link:not([data-comment_id='${parentId}'])`);
+        if (otherLink !== null) {
+            linkToParent.classList.add("cplus--parent-link-highlight");
+        }
+        // This prevents the link from being expanded
+        linkToParent.dataset.parentLink = true;
     }
+}
+
+function getQuoteLinkStatus(quoteLink) {
+    return {
+        isExpanded: quoteLink.classList.contains("cplus--expanded-link"),
+        isParentLink: quoteLink.dataset.parentLink,
+        parentCollapsed: fQuery
+            .closestParent(quoteLink, ".comment")
+            .classList.contains("cplus--collapsed-comment")
+    };
 }
 
 // Return the range of comment indexes for the current page
