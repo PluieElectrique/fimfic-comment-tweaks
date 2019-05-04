@@ -84,7 +84,7 @@ function init() {
     }
 }
 
-// An wrapper object that will be assigned onto the real comment controller
+// A wrapper object that will be assigned onto the real comment controller
 let commentControllerShell = {
     // Map from comment number (`data-comment_id`) to { author, index }
     commentMetadata: {},
@@ -350,6 +350,7 @@ function markParentLink(parent, child) {
     }
 }
 
+// Return the range of comment indexes for the current page
 function getCommentIndexRange() {
     let indexToNumber = indexClass =>
         Number(document.querySelector(indexClass).textContent.replace(/,/g, ""));
