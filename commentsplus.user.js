@@ -21,11 +21,11 @@ if (document.readyState == "complete") {
 let cplusCSS = `
 .cplus--collapse-button { padding: 3px; }
 .cplus--collapse-button:not(:hover) { opacity: 0.7; }
-.cplus--collapsed .author > .avatar { display: none; }
-.cplus--collapsed .comment_callbacks > a { opacity: 0.7; }
-.cplus--collapsed .comment_callbacks > div { display: none; }
-.cplus--collapsed .comment_data { display: none; }
-.cplus--collapsed .comment_information:after { height: 0; }
+.cplus--collapsed-comment .author > .avatar { display: none; }
+.cplus--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
+.cplus--collapsed-comment .comment_callbacks > div { display: none; }
+.cplus--collapsed-comment .comment_data { display: none; }
+.cplus--collapsed-comment .comment_information:after { height: 0; }
 .cplus--expanded-link { opacity: 0.7; }
 .cplus--forward-hidden { display: none; }
 .cplus--parent-link { text-decoration: underline; }
@@ -66,7 +66,7 @@ function init() {
             let isExpanded = evt.target.classList.contains("cplus--expanded-link");
             let isCollapsed = fQuery
                 .closestParent(evt.target, ".comment")
-                .classList.contains("cplus--collapsed");
+                .classList.contains("cplus--collapsed-comment");
             let isParentLink = evt.target.classList.contains("cplus--parent-link");
             if (!isExpanded && !isCollapsed && !isParentLink) {
                 commentController.beginShowQuote(evt.target);
@@ -150,8 +150,8 @@ let commentControllerShell = {
         let parent = fQuery.closestParent(quoteLink, ".comment");
 
         // Don't expand parent links or links of collapsed comments
-        let isCollapsed = parent.classList.contains("cplus--collapsed");
         let isParentLink = quoteLink.classList.contains("cplus--parent-link");
+        let isCollapsed = parent.classList.contains("cplus--collapsed-comment");
         if (isCollapsed || isParentLink) {
             return;
         }
@@ -283,10 +283,10 @@ function setupCollapseButtons() {
 }
 
 function toggleCollapseCommentTree(comment) {
-    collapseCommentTree(comment, !comment.classList.contains("cplus--collapsed"));
+    collapseCommentTree(comment, !comment.classList.contains("cplus--collapsed-comment"));
 }
 function collapseCommentTree(comment, collapse) {
-    comment.classList.toggle("cplus--collapsed", collapse);
+    comment.classList.toggle("cplus--collapsed-comment", collapse);
 
     let collapseIcon = comment.querySelector(".cplus--collapse-button > i");
     collapseIcon.classList.toggle("fa-plus-square-o", collapse);
@@ -320,7 +320,7 @@ function cloneComment(comment) {
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
     clone.classList.remove("cplus--forward-hidden");
-    clone.classList.remove("cplus--collapsed");
+    clone.classList.remove("cplus--collapsed-comment");
 
     // Remove middot and collapse button
     let collapseButton = clone.querySelector(".cplus--collapse-button");
