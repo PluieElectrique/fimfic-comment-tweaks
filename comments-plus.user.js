@@ -4,8 +4,8 @@
 // @author         Pluie
 // @version        0.0.1
 // @homepageURL    https://github.com/PluieElectrique/fimfic-comments-plus
-// @downloadURL    https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
-// @updateURL      https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/commentsplus.user.js
+// @downloadURL    https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js
+// @updateURL      https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js
 // @match          *://www.fimfiction.net/*
 // @run-at         document-idle
 // ==/UserScript==
