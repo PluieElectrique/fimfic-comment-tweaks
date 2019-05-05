@@ -317,8 +317,16 @@ function collapseCommentTree(comment, collapse) {
             : comment.querySelectorAll(".comment_quote_link:not(.comment_callback)");
 
     for (let quoteLink of quoteLinks) {
-        let id = "comment_" + quoteLink.dataset.comment_id;
-        collapseCommentTree(document.getElementById(id), collapse);
+        // In DESC sorting, we need to ignore links to comments on other pages. This also means
+        // avoiding comments which have been stored in quote_container and hidden_comments.
+        let nextComment = commentController.comment_list.querySelector(
+            "#comment_" + quoteLink.dataset.comment_id
+        );
+        if (nextComment === null) {
+            continue;
+        }
+
+        collapseCommentTree(nextComment, collapse);
     }
 }
 
