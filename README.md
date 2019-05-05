@@ -4,7 +4,7 @@ Userscript for enhanced Fimfiction comments. Inspired by [4chan X](https://www.4
 
 ## Install
 
-Get Violentmonkey for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) or [Chrome](https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag). It should also work in Tampermonkey. Greasemonkey is not supported.
+Install [Violentmonkey](https://violentmonkey.github.io/get-it/) for your browser. It should also work in [Tampermonkey](https://www.tampermonkey.net/). Greasemonkey is not supported (but may still work, I don't know or test it).
 
 Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js) to install the userscript.
 
