@@ -261,10 +261,6 @@ function getCommentIndexRange() {
 }
 
 function forwardHide(quoteLink, change) {
-    if (change !== 1 && change !== -1) {
-        throw new Error("Change to expand count must be 1 or -1");
-    }
-
     // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
     // forward hide when expanding callbacks. Non-callbacks expand older comments. So, in DESC order
     // (newest to oldest), we forward hide when expanding non-callbacks.
