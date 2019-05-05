@@ -10,6 +10,8 @@
 // @run-at         document-idle
 // ==/UserScript==
 
+let commentController;
+
 // Despite the @run-at option, Firefox sometimes runs the userscript before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
 if (document.readyState == "complete") {
@@ -42,7 +44,7 @@ function init() {
     style.textContent = cplusCSS;
     document.head.appendChild(style);
 
-    let commentController = App.GetControllerFromElement(storyComments);
+    commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
     setupCollapseButtons();
@@ -307,8 +309,15 @@ function collapseCommentTree(comment, collapse) {
     collapseIcon.classList.toggle("fa-plus-square-o", collapse);
     collapseIcon.classList.toggle("fa-minus-square-o", !collapse);
 
-    for (let callback of comment.querySelectorAll(".comment_callback")) {
-        let id = "comment_" + callback.dataset.comment_id;
+    // We always collapse comments which appear later in the comment list. Exactly which quote links
+    // we search through depends on the sorting order.
+    let quoteLinks =
+        commentController.order === "ASC"
+            ? comment.querySelectorAll(".comment_callback")
+            : comment.querySelectorAll(".comment_quote_link:not(.comment_callback)");
+
+    for (let quoteLink of quoteLinks) {
+        let id = "comment_" + quoteLink.dataset.comment_id;
         collapseCommentTree(document.getElementById(id), collapse);
     }
 }
