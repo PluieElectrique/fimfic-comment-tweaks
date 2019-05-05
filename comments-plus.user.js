@@ -63,8 +63,8 @@ function init() {
         evt => {
             // Remove 150ms delay by preventing the normal event listener from firing
             evt.stopPropagation();
-            // Don't show popup quote for expanded links, links of collapsed comments, or links to
-            // the parent comment
+            // Don't show popup quote for expanded links, links within collapsed comments, or links
+            // to the parent comment
             let linkStatus = getQuoteLinkStatus(evt.target);
             if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
                 commentController.beginShowQuote(evt.target);
@@ -147,7 +147,7 @@ let commentControllerShell = {
     expandQuote: function(quoteLink) {
         let parent = fQuery.closestParent(quoteLink, ".comment");
 
-        // Don't expand parent links or links inside collapsed comments
+        // Don't expand parent links or links within collapsed comments
         let linkStatus = getQuoteLinkStatus(quoteLink);
         if (linkStatus.parentCollapsed || linkStatus.isParentLink) {
             return;
