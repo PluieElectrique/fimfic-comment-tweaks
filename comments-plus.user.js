@@ -165,7 +165,7 @@ let commentControllerShell = {
                 markParentLink(parent, clone);
                 clone.classList.add("inline-quote");
 
-                this.forwardHide(quoteLink, 1);
+                forwardHide(quoteLink, 1);
                 quoteLink.classList.add("cplus--expanded-link");
 
                 // is_mobile is a global declared in an inline script in <head>. It seems detection
@@ -193,14 +193,14 @@ let commentControllerShell = {
             // The comment is already expanded, so remove it
             fQuery.removeElement(expandedComment);
             quoteLink.classList.remove("cplus--expanded-link");
-            this.forwardHide(quoteLink, -1);
+            forwardHide(quoteLink, -1);
         }
     },
 
-    /* Extra methods for ease of accessing `this` */
+    /* Extra methods */
 
     storeComments: function() {
-        let indexRange = this.getCommentIndexRange();
+        let indexRange = getCommentIndexRange();
 
         // It's easier to number the comments off from an index than it is to extract the index from
         // the <a> (as that <a> has no ID to easily get it by).
@@ -230,61 +230,61 @@ let commentControllerShell = {
     },
 
     rewriteQuoteLinks: function(elem) {
-        let indexRange = this.getCommentIndexRange();
+        let indexRange = getCommentIndexRange();
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
             let meta = this.commentMetadata[quoteLink.dataset.comment_id];
             if (meta !== undefined && (meta.index < indexRange[0] || indexRange[1] < meta.index)) {
                 quoteLink.textContent = `${meta.author} (#${meta.index})`;
             }
         }
-    },
-
-    getCommentIndexRange: function() {
-        // We could extract the index from the .start-index, .end-index, and .num-comments elements.
-        // But, because of how goToPage works (it doesn't share the index data with the promise
-        // callback, and any callback we did pass would run before it updated the index elements),
-        // it's easier to do this.
-        let extractIndex = comment =>
-            Number(
-                comment
-                    .querySelector(`a[href='#comment/${comment.dataset.comment_id}']`)
-                    .textContent.slice(1)
-                    .replace(/,/g, "")
-            );
-
-        let firstIndex = extractIndex(this.comment_list.firstElementChild);
-        let lastIndex = extractIndex(this.comment_list.lastElementChild);
-
-        // The order depends on the comment sorting
-        return [Math.min(firstIndex, lastIndex), Math.max(firstIndex, lastIndex)];
-    },
-
-    forwardHide: function(quoteLink, change) {
-        if (change !== 1 && change !== -1) {
-            throw new Error("Change to expand count must be 1 or -1");
-        }
-
-        // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
-        // forward hide when expanding callbacks. Non-callbacks expand older comments. So, in DESC
-        // order (newest to oldest), we forward hide when expanding non-callbacks.
-        let isCallback = quoteLink.classList.contains("comment_callback");
-        let isASC = this.order === "ASC";
-        if (isCallback !== isASC) {
-            return;
-        }
-
-        let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
-        let newCount = Number(comment.dataset.expandCount || 0) + change;
-        if (newCount < 0) {
-            throw new Error("Expand count cannot be less than 0");
-        } else if (newCount === 0) {
-            comment.classList.remove("cplus--forward-hidden");
-        } else if (newCount === 1) {
-            comment.classList.add("cplus--forward-hidden");
-        }
-        comment.dataset.expandCount = newCount;
     }
 };
+
+function getCommentIndexRange() {
+    // We could extract the index from the .start-index, .end-index, and .num-comments elements.
+    // But, because of how goToPage works (it doesn't share the index data with the promise
+    // callback, and any callback we did pass would run before it updated the index elements), it's
+    // easier to do this.
+    let extractIndex = comment =>
+        Number(
+            comment
+                .querySelector(`a[href='#comment/${comment.dataset.comment_id}']`)
+                .textContent.slice(1)
+                .replace(/,/g, "")
+        );
+
+    let firstIndex = extractIndex(commentController.comment_list.firstElementChild);
+    let lastIndex = extractIndex(commentController.comment_list.lastElementChild);
+
+    // The order depends on the comment sorting
+    return [Math.min(firstIndex, lastIndex), Math.max(firstIndex, lastIndex)];
+}
+
+function forwardHide(quoteLink, change) {
+    if (change !== 1 && change !== -1) {
+        throw new Error("Change to expand count must be 1 or -1");
+    }
+
+    // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
+    // forward hide when expanding callbacks. Non-callbacks expand older comments. So, in DESC order
+    // (newest to oldest), we forward hide when expanding non-callbacks.
+    let isCallback = quoteLink.classList.contains("comment_callback");
+    let isASC = commentController.order === "ASC";
+    if (isCallback !== isASC) {
+        return;
+    }
+
+    let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
+    let newCount = Number(comment.dataset.expandCount || 0) + change;
+    if (newCount < 0) {
+        throw new Error("Expand count cannot be less than 0");
+    } else if (newCount === 0) {
+        comment.classList.remove("cplus--forward-hidden");
+    } else if (newCount === 1) {
+        comment.classList.add("cplus--forward-hidden");
+    }
+    comment.dataset.expandCount = newCount;
+}
 
 function setupCollapseButtons() {
     for (let metaName of document.querySelectorAll(".meta > .name")) {
