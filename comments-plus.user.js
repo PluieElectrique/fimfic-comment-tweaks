@@ -198,7 +198,7 @@ let commentControllerShell = {
     /* Extra methods for ease of accessing `this` */
 
     storeComments: function() {
-        let indexRange = getCommentIndexRange();
+        let indexRange = this.getCommentIndexRange();
 
         // It's easier to number the comments off from an index than it is to extract the index from
         // the <a> (as that <a> has no ID to easily get it by).
@@ -228,13 +228,33 @@ let commentControllerShell = {
     },
 
     rewriteQuoteLinks: function(elem) {
-        let indexRange = getCommentIndexRange();
+        let indexRange = this.getCommentIndexRange();
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
             let meta = this.commentMetadata[quoteLink.dataset.comment_id];
             if (meta !== undefined && (meta.index < indexRange[0] || indexRange[1] < meta.index)) {
                 quoteLink.textContent = `${meta.author} (#${meta.index})`;
             }
         }
+    },
+
+    getCommentIndexRange: function() {
+        // We could extract the index from the .start-index, .end-index, and .num-comments elements.
+        // But, because of how goToPage works (it doesn't share the index data with the promise
+        // callback, and any callback we did pass would run before it updated the index elements),
+        // it's easier to do this.
+        let extractIndex = comment =>
+            Number(
+                comment
+                    .querySelector(`a[href='#comment/${comment.dataset.comment_id}']`)
+                    .textContent.slice(1)
+                    .replace(/,/g, "")
+            );
+
+        let firstIndex = extractIndex(this.comment_list.firstElementChild);
+        let lastIndex = extractIndex(this.comment_list.lastElementChild);
+
+        // The order depends on the comment sorting
+        return [Math.min(firstIndex, lastIndex), Math.max(firstIndex, lastIndex)];
     },
 
     forwardHide: function(quoteLink, change) {
@@ -365,23 +385,6 @@ function getQuoteLinkStatus(quoteLink) {
             .closestParent(quoteLink, ".comment")
             .classList.contains("cplus--collapsed-comment")
     };
-}
-
-// Return the range of comment indexes for the current page
-function getCommentIndexRange() {
-    let indexToNumber = indexClass =>
-        Number(document.querySelector(indexClass).textContent.replace(/,/g, ""));
-
-    // There are two cases in which an index can be greater than .num-comments:
-    //   * If a story has 0 comments, .start-index will incorrectly be 1.
-    //   * In ASC order, .end-index is rounded up to the nearest multiple of 50. If the number of
-    //     comments is not a multiple of 50, .end-index will be wrong on the last page.
-    //     Issue: https://github.com/knighty/fimfiction-issues/issues/124
-    let numComments = indexToNumber(".num-comments");
-    let startIndex = Math.min(indexToNumber(".start-index"), numComments);
-    let endIndex = Math.min(indexToNumber(".end-index"), numComments);
-
-    return [startIndex, endIndex];
 }
 
 function createMiddot() {
