@@ -147,7 +147,7 @@ let commentControllerShell = {
     expandQuote: function(quoteLink) {
         let parent = fQuery.closestParent(quoteLink, ".comment");
 
-        // Don't expand parent links or links of collapsed comments
+        // Don't expand parent links or links inside collapsed comments
         let linkStatus = getQuoteLinkStatus(quoteLink);
         if (linkStatus.parentCollapsed || linkStatus.isParentLink) {
             return;
