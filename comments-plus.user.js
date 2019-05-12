@@ -108,8 +108,8 @@ let commentControllerShell = {
 
     setupQuotes: function() {
         CommentListController.prototype.setupQuotes.call(this);
-        this.rewriteQuoteLinks(this.comment_list);
         this.storeComments();
+        this.rewriteQuoteLinks(this.comment_list);
         setupCollapseButtons();
     },
 
@@ -233,8 +233,15 @@ let commentControllerShell = {
         let indexRange = getCommentIndexRange();
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
             let meta = this.commentMetadata[quoteLink.dataset.comment_id];
-            if (meta !== undefined && (meta.index < indexRange[0] || indexRange[1] < meta.index)) {
-                quoteLink.textContent = `${meta.author} (#${meta.index})`;
+            if (meta !== undefined) {
+                if (meta.index < indexRange[0] || indexRange[1] < meta.index) {
+                    // Rewrite cross-page comments
+                    quoteLink.textContent = `${meta.author} (#${meta.index})`;
+                } else if (is_mobile) {
+                    // On mobile, the prototype setupQuotes does nothing. So we have to rewrite all
+                    // quote links
+                    quoteLink.textContent = meta.author;
+                }
             }
         }
     }

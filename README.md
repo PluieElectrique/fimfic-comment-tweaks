@@ -29,6 +29,11 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 * When there are multiple quote links in an child comment, the link to the parent comment is underlined
 * Removed 150ms delay to show comment when hovering over quote link
 
+### Mobile
+
+* Collapsing single comments
+* Quote links show usernames instead of IDs
+
 ## Legal
 
 This userscript is under the MIT License. A copy can be found in the `LICENSE` file.
