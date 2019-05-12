@@ -190,10 +190,13 @@ let commentControllerShell = {
                 }
             });
         } else {
-            // The comment is already expanded, so remove it
+            // Update forward hiding counts for all expanded links
+            for (let quoteLink of expandedComment.getElementsByClassName("cplus--expanded-link")) {
+                forwardHide(quoteLink, -1);
+            }
             fQuery.removeElement(expandedComment);
-            quoteLink.classList.remove("cplus--expanded-link");
             forwardHide(quoteLink, -1);
+            quoteLink.classList.remove("cplus--expanded-link");
         }
     },
 
