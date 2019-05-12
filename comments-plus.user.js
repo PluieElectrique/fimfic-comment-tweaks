@@ -125,7 +125,7 @@ let commentControllerShell = {
         this.getComment(quoteLink.dataset.comment_id).then(comment => {
             this.quote_container.classList.remove("hidden");
             if (this.quote_container.firstChild !== null) {
-                fQuery.removeElement(this.quote_container.firstChild);
+                removeElement(this.quote_container.firstChild);
             }
 
             let parent = fQuery.closestParent(quoteLink, ".comment");
@@ -194,7 +194,7 @@ let commentControllerShell = {
             for (let quoteLink of expandedComment.getElementsByClassName("cplus--expanded-link")) {
                 forwardHide(quoteLink, -1);
             }
-            fQuery.removeElement(expandedComment);
+            removeElement(expandedComment);
             forwardHide(quoteLink, -1);
             quoteLink.classList.remove("cplus--expanded-link");
         }
@@ -342,7 +342,7 @@ function cloneComment(comment) {
     let commentCallbacks = comment.querySelector(".comment_callbacks");
     let callbackQuotes = commentCallbacks.querySelectorAll(".inline-quote");
     for (let quote of callbackQuotes) {
-        fQuery.removeElement(quote);
+        removeElement(quote);
     }
 
     let commentData = comment.querySelector(".comment_data");
@@ -363,8 +363,8 @@ function cloneComment(comment) {
     // Remove middot and collapse button
     let collapseButton = clone.querySelector(".cplus--collapse-button");
     if (collapseButton !== null) {
-        fQuery.removeElement(collapseButton.nextElementSibling);
-        fQuery.removeElement(collapseButton);
+        removeElement(collapseButton.nextElementSibling);
+        removeElement(collapseButton);
     }
 
     // Restore quotes
@@ -414,4 +414,8 @@ function createMiddot() {
     let middot = document.createElement("b");
     middot.textContent = "\u00b7";
     return middot;
+}
+
+function removeElement(elem) {
+    elem.parentNode.removeChild(elem);
 }
