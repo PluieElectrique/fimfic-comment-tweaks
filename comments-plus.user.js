@@ -359,6 +359,8 @@ function cloneComment(comment) {
     clone.removeAttribute("id");
     clone.classList.remove("cplus--forward-hidden");
     clone.classList.remove("cplus--collapsed-comment");
+    // Get rid of the blue highlight caused by clicking on the comment's index or posting date
+    clone.classList.remove("comment_selected");
 
     // Remove middot and collapse button
     let collapseButton = clone.querySelector(".cplus--collapse-button");
