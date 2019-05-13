@@ -336,7 +336,7 @@ function collapseCommentTree(comment, collapse) {
     }
 }
 
-// Clone a comment unhidden and without expanded links and collapse button/middot
+// Clone a comment and reset it
 function cloneComment(comment) {
     // Remove quotes to avoid cloning them
     let commentCallbacks = comment.querySelector(".comment_callbacks");
@@ -344,7 +344,6 @@ function cloneComment(comment) {
     for (let quote of callbackQuotes) {
         removeElement(quote);
     }
-
     let commentData = comment.querySelector(".comment_data");
     let dataQuotes = [];
     for (let quote of commentData.querySelectorAll(".inline-quote")) {
@@ -357,10 +356,16 @@ function cloneComment(comment) {
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
-    clone.classList.remove("cplus--forward-hidden");
-    clone.classList.remove("cplus--collapsed-comment");
     // Get rid of the blue highlight caused by clicking on the comment's index or posting date
     clone.classList.remove("comment_selected");
+
+    // Remove cplus classes (we don't need to remove parent-link-highlight because it's only applied
+    // to links in expanded comments)
+    clone.classList.remove("cplus--forward-hidden");
+    clone.classList.remove("cplus--collapsed-comment");
+    for (let expandedLink of clone.getElementsByClassName("cplus--expanded-link")) {
+        expandedLink.classList.remove("cplus--expanded-link");
+    }
 
     // Remove middot and collapse button
     let collapseButton = clone.querySelector(".cplus--collapse-button");
@@ -373,7 +378,6 @@ function cloneComment(comment) {
     for (let quote of callbackQuotes) {
         commentCallbacks.appendChild(quote);
     }
-
     for (let quote of dataQuotes) {
         fQuery.insertAfter(quote.link, quote.quote);
     }
