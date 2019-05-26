@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name           Fimfiction Comments Plus
-// @description    Enhanced comments for Fimfiction
+// @name           Fimfiction Comment Tweaks
+// @description    Tweaks for Fimfiction comments
 // @author         Pluie
 // @version        0.0.1
-// @homepageURL    https://github.com/PluieElectrique/fimfic-comments-plus
-// @downloadURL    https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js
-// @updateURL      https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js
+// @homepageURL    https://github.com/PluieElectrique/fimfic-comment-tweaks
+// @downloadURL    https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js
+// @updateURL      https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js
 // @match          *://www.fimfiction.net/*
 // @run-at         document-idle
 // ==/UserScript==
@@ -20,17 +20,17 @@ if (document.readyState == "complete") {
     window.addEventListener("load", init);
 }
 
-let cplusCSS = `
-.cplus--collapse-button { padding: 3px; }
-.cplus--collapse-button:not(:hover) { opacity: 0.7; }
-.cplus--collapsed-comment .author > .avatar { display: none; }
-.cplus--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
-.cplus--collapsed-comment .comment_callbacks > div { display: none; }
-.cplus--collapsed-comment .comment_data { display: none; }
-.cplus--collapsed-comment .comment_information:after { height: 0; }
-.cplus--expanded-link { opacity: 0.7; }
-.cplus--forward-hidden { display: none; }
-.cplus--parent-link-highlight { text-decoration: underline; }
+let ctCSS = `
+.ct--collapse-button { padding: 3px; }
+.ct--collapse-button:not(:hover) { opacity: 0.7; }
+.ct--collapsed-comment .author > .avatar { display: none; }
+.ct--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
+.ct--collapsed-comment .comment_callbacks > div { display: none; }
+.ct--collapsed-comment .comment_data { display: none; }
+.ct--collapsed-comment .comment_information:after { height: 0; }
+.ct--expanded-link { opacity: 0.7; }
+.ct--forward-hidden { display: none; }
+.ct--parent-link-highlight { text-decoration: underline; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
 
@@ -41,7 +41,7 @@ function init() {
     }
 
     let style = document.createElement("style");
-    style.textContent = cplusCSS;
+    style.textContent = ctCSS;
     document.head.appendChild(style);
 
     commentController = App.GetControllerFromElement(storyComments);
@@ -51,7 +51,7 @@ function init() {
 
     fQuery.addScopedEventListener(
         commentController.comment_list,
-        ".cplus--collapse-button",
+        ".ct--collapse-button",
         "click",
         evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
@@ -175,7 +175,7 @@ let commentControllerShell = {
                 clone.classList.add("inline-quote");
 
                 forwardHide(quoteLink, 1);
-                quoteLink.classList.add("cplus--expanded-link");
+                quoteLink.classList.add("ct--expanded-link");
 
                 // is_mobile is a global declared in an inline script in <head>. It seems detection
                 // of mobile browsers is done server side (probably through user agent).
@@ -200,12 +200,12 @@ let commentControllerShell = {
             });
         } else {
             // Update forward hiding counts for all expanded links
-            for (let quoteLink of expandedComment.getElementsByClassName("cplus--expanded-link")) {
+            for (let quoteLink of expandedComment.getElementsByClassName("ct--expanded-link")) {
                 forwardHide(quoteLink, -1);
             }
             removeElement(expandedComment);
             forwardHide(quoteLink, -1);
-            quoteLink.classList.remove("cplus--expanded-link");
+            quoteLink.classList.remove("ct--expanded-link");
         }
     },
 
@@ -294,9 +294,9 @@ function forwardHide(quoteLink, change) {
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
     } else if (newCount === 0) {
-        comment.classList.remove("cplus--forward-hidden");
+        comment.classList.remove("ct--forward-hidden");
     } else if (newCount === 1) {
-        comment.classList.add("cplus--forward-hidden");
+        comment.classList.add("ct--forward-hidden");
     }
     comment.dataset.expandCount = newCount;
 }
@@ -306,7 +306,7 @@ function setupCollapseButtons() {
         fQuery.insertAfter(metaName, createMiddot());
 
         let collapseButton = document.createElement("a");
-        collapseButton.classList.add("cplus--collapse-button");
+        collapseButton.classList.add("ct--collapse-button");
         let minus = document.createElement("i");
         minus.classList.add("fa", "fa-minus-square-o");
         collapseButton.appendChild(minus);
@@ -315,12 +315,12 @@ function setupCollapseButtons() {
 }
 
 function toggleCollapseCommentTree(comment) {
-    collapseCommentTree(comment, !comment.classList.contains("cplus--collapsed-comment"));
+    collapseCommentTree(comment, !comment.classList.contains("ct--collapsed-comment"));
 }
 function collapseCommentTree(comment, collapse) {
-    comment.classList.toggle("cplus--collapsed-comment", collapse);
+    comment.classList.toggle("ct--collapsed-comment", collapse);
 
-    let collapseIcon = comment.querySelector(".cplus--collapse-button > i");
+    let collapseIcon = comment.querySelector(".ct--collapse-button > i");
     collapseIcon.classList.toggle("fa-plus-square-o", collapse);
     collapseIcon.classList.toggle("fa-minus-square-o", !collapse);
 
@@ -368,16 +368,16 @@ function cloneComment(comment) {
     // Get rid of the blue highlight caused by clicking on the comment's index or posting date
     clone.classList.remove("comment_selected");
 
-    // Remove cplus classes (we don't need to remove parent-link-highlight because it's only applied
+    // Remove ct classes (we don't need to remove parent-link-highlight because it's only applied
     // to links in expanded comments)
-    clone.classList.remove("cplus--forward-hidden");
-    clone.classList.remove("cplus--collapsed-comment");
-    for (let expandedLink of clone.getElementsByClassName("cplus--expanded-link")) {
-        expandedLink.classList.remove("cplus--expanded-link");
+    clone.classList.remove("ct--forward-hidden");
+    clone.classList.remove("ct--collapsed-comment");
+    for (let expandedLink of clone.getElementsByClassName("ct--expanded-link")) {
+        expandedLink.classList.remove("ct--expanded-link");
     }
 
     // Remove middot and collapse button
-    let collapseButton = clone.querySelector(".cplus--collapse-button");
+    let collapseButton = clone.querySelector(".ct--collapse-button");
     if (collapseButton !== null) {
         removeElement(collapseButton.nextElementSibling);
         removeElement(collapseButton);
@@ -408,7 +408,7 @@ function markParentLink(parentComment, childComment) {
             .closestParent(linkToParent, ".comment_data, .comment_callbacks")
             .querySelector(`.comment_quote_link:not([data-comment_id='${parentId}'])`);
         if (otherLink !== null) {
-            linkToParent.classList.add("cplus--parent-link-highlight");
+            linkToParent.classList.add("ct--parent-link-highlight");
         }
         // This prevents the link from being expanded
         linkToParent.dataset.parentLink = true;
@@ -417,11 +417,11 @@ function markParentLink(parentComment, childComment) {
 
 function getQuoteLinkStatus(quoteLink) {
     return {
-        isExpanded: quoteLink.classList.contains("cplus--expanded-link"),
+        isExpanded: quoteLink.classList.contains("ct--expanded-link"),
         isParentLink: quoteLink.dataset.parentLink,
         parentCollapsed: fQuery
             .closestParent(quoteLink, ".comment")
-            .classList.contains("cplus--collapsed-comment")
+            .classList.contains("ct--collapsed-comment")
     };
 }
 

@@ -1,12 +1,10 @@
-# Fimfiction Comments Plus
-
-Userscript for enhanced Fimfiction comments. Inspired by [4chan X](https://www.4chan-x.net/).
+# Fimfiction Comment Tweaks
 
 ## Install
 
 Install [Violentmonkey](https://violentmonkey.github.io/get-it/) for your browser. It should also work in [Tampermonkey](https://www.tampermonkey.net/). Greasemonkey is not supported (but may still work, I don't know or test it).
 
-Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/master/comments-plus.user.js) to install the userscript.
+Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js) to install the userscript.
 
 ## Features
 
@@ -17,7 +15,8 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 * Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment
     * "Oldest First" ordering: Expanding a backlink (in the header of a comment) will hide the original comment
     * "Newest First" ordering: Expanding a quote link (in the body of a comment) will hide the original comment
-### Tweaks
+
+### Miscellaneous
 
 * Expanded comments show the username in the header
 * When possible, cross-page quote links show the username and comment index instead of the comment ID
@@ -39,6 +38,10 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 On mobile, the main difference is that there are no backlinks (as is normal).
 
 * Disabled showing comments on hover (`mouseover` events can sometimes be triggered)
+
+## Thanks
+
+The comment collapsing and forward hiding behavior is based off of [4chan X](https://www.4chan-x.net/).
 
 ## Legal
 
