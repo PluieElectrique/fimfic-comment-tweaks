@@ -50,7 +50,11 @@ function init() {
     commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
-    commentController.setupQuotes();
+    if (is_mobile) {
+        commentController.storeComments();
+        commentController.rewriteQuoteLinks(commentController.comment_list);
+    }
+    setupCollapseButtons();
 
     fQuery.addScopedEventListener(
         commentController.comment_list,
