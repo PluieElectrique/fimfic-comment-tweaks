@@ -47,7 +47,7 @@ function init() {
     commentController = App.GetControllerFromElement(storyComments);
     Object.assign(commentController, commentControllerShell);
 
-    setupCollapseButtons();
+    commentController.setupQuotes();
 
     fQuery.addScopedEventListener(
         commentController.comment_list,
