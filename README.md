@@ -35,8 +35,9 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 
 ### Mobile
 
-* Collapsing single comments
-* Quote links show usernames instead of IDs
+On mobile, the main difference is that there are no backlinks (as is normal).
+
+* Disabled showing comments on hover (`mouseover` events can sometimes be triggered)
 
 ## Legal
 

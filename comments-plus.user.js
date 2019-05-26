@@ -63,6 +63,11 @@ function init() {
         evt => {
             // Remove 150ms delay by preventing the normal event listener from firing
             evt.stopPropagation();
+            // Mouseover events can sometimes be triggered on mobile, but there's no point. They
+            // just block the page.
+            if (is_mobile) {
+                return;
+            }
             // Don't show popup quote for expanded links, links within collapsed comments, or links
             // to the parent comment
             let linkStatus = getQuoteLinkStatus(evt.target);
