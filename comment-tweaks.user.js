@@ -10,7 +10,7 @@
 // @run-at         document-idle
 // ==/UserScript==
 
-let commentController;
+var commentController;
 
 // Despite the @run-at option, the userscript is sometimes stil ran before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
@@ -20,7 +20,7 @@ if (document.readyState == "complete") {
     window.addEventListener("load", init);
 }
 
-let ctCSS = `
+var ctCSS = `
 .ct--collapse-button { padding: 3px; }
 .ct--collapsed-comment .author > .avatar { display: none; }
 .ct--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
@@ -91,7 +91,7 @@ function init() {
 }
 
 // A wrapper object that will be assigned onto the real comment controller
-let commentControllerShell = {
+var commentControllerShell = {
     // Map from comment number (`data-comment_id`) to { author, index }
     commentMetadata: {},
 
