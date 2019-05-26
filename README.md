@@ -25,6 +25,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 * Quote links to the parent comment are disabled (somewhat prevents infinite expanding)
 * Hovering on an expanded link does not show its comment
 * Expanded comments do not expand with their own expanded comments
+* Embeds (image, YouTube, etc) work correctly in expanded comments
 
 ### Cosmetic
 

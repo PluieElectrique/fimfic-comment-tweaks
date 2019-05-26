@@ -56,6 +56,19 @@ function init() {
     }
     setupCollapseButtons();
 
+    setupEventListeners();
+
+    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
+    // the original code, it's checked for on each call. Here, we create it at init.
+    if (commentController.quote_container === null) {
+        let container = document.createElement("div");
+        container.className = "quote_container";
+        document.body.appendChild(container);
+        commentController.quote_container = container;
+    }
+}
+
+function setupEventListeners() {
     fQuery.addScopedEventListener(
         commentController.comment_list,
         ".ct--collapse-button",
@@ -84,14 +97,21 @@ function init() {
         }
     );
 
-    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
-    // the original code, it's checked for on each call. Here, we create it at init.
-    if (commentController.quote_container === null) {
-        let container = document.createElement("div");
-        container.className = "quote_container";
-        document.body.appendChild(container);
-        commentController.quote_container = container;
-    }
+    // These event listeners are added as "global binders." That is, they are added to each element
+    // that matches their selector. Because this binding is only done at load (and in a few other
+    // cases), and because cloneNode does not copy event listeners, embeds will not work in expanded
+    // comments. Listeners scoped to the comment list let all embeds work.
+    let containerClasses = ["user_image_link", "youtube_container", "embed-container"];
+    App.globalBinders
+        .filter(binder => containerClasses.includes(binder.class))
+        .forEach(binder => {
+            fQuery.addScopedEventListener(
+                commentController.comment_list,
+                binder.selector,
+                binder.event,
+                binder.binder
+            );
+        });
 }
 
 // A wrapper object that will be assigned onto the real comment controller
