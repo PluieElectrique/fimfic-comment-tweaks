@@ -143,11 +143,11 @@ let commentControllerShell = {
             markParentLink(parent, clone);
             this.quote_container.appendChild(clone);
 
-            let parentRect = parent.getBoundingClientRect();
+            let parentRect = this.comment_list.getBoundingClientRect();
             let style = this.quote_container.style;
             style.top = quoteLink.getBoundingClientRect().top + fQuery.scrollTop() + 23 + "px";
-            style.left = parentRect.left - 20 + "px";
-            style.width = parentRect.width + 40 + "px";
+            style.left = parentRect.left - 6 + "px";
+            style.width = parentRect.width + 12 + "px";
 
             App.DispatchEvent(this.quote_container, "loadVisibleImages");
         });

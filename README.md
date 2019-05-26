@@ -32,6 +32,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 * Expanded quote links are grayed out
 * When there are multiple quote links in an child comment, the link to the parent comment is underlined
 * Removed 150ms delay to show comment when hovering over quote link
+* Comments shown on hover are the full width of the comment list (as opposed to the width of their parent comment)
 
 ### Mobile
 
