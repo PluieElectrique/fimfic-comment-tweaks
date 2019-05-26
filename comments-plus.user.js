@@ -97,9 +97,13 @@ let commentControllerShell = {
 
         return CommentListController.prototype.getComment.call(this, id).then(comment => {
             let meta = this.commentMetadata[id];
+            let link = comment.querySelector(`[href='#comment/${id}']`);
             if (meta !== undefined) {
                 // Rewrite comment index
-                comment.querySelector(`[href='#comment/${id}']`).textContent = "#" + meta.index;
+                link.textContent = formatCommentIndex(meta.index);
+            } else {
+                // Remove "#" to avoid confusing comment IDs with comment indexes
+                link.textContent = link.textContent.slice(1);
             }
             this.rewriteQuoteLinks(comment);
             return comment;
@@ -239,7 +243,7 @@ let commentControllerShell = {
             if (meta !== undefined) {
                 if (meta.index < indexRange[0] || indexRange[1] < meta.index) {
                     // Rewrite cross-page comments
-                    quoteLink.textContent = `${meta.author} (#${meta.index})`;
+                    quoteLink.textContent = `${meta.author} (${formatCommentIndex(meta.index)})`;
                 } else if (is_mobile) {
                     // On mobile, the prototype setupQuotes does nothing. So we have to rewrite all
                     // quote links
@@ -414,6 +418,11 @@ function getQuoteLinkStatus(quoteLink) {
             .closestParent(quoteLink, ".comment")
             .classList.contains("cplus--collapsed-comment")
     };
+}
+
+// https://stackoverflow.com/a/2901298
+function formatCommentIndex(index) {
+    return ("#" + index).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function createMiddot() {
