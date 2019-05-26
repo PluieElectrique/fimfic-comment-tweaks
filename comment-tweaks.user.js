@@ -22,7 +22,6 @@ if (document.readyState == "complete") {
 
 let ctCSS = `
 .ct--collapse-button { padding: 3px; }
-.ct--collapse-button:not(:hover) { opacity: 0.7; }
 .ct--collapsed-comment .author > .avatar { display: none; }
 .ct--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
 .ct--collapsed-comment .comment_callbacks > div { display: none; }
