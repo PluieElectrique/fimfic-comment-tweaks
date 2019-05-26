@@ -10,13 +10,13 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comments-plus/raw/m
 
 ## Features
 
-* Comment collapsing: Collapse a comment and all of its "descendants."
-    * "Oldest First" ordering: Collapses the comment, its replies, replies to those replies, and so on.
-    * "Newest First" ordering: Collapses the comment, comments that it replied to, comment that those comments replied to, and so on.
+* Comment collapsing: Collapse a comment and all of its "descendants"
+    * "Oldest First" ordering: Collapses the comment, its replies, replies to those replies, and so on
+    * "Newest First" ordering: Collapses the comment, comments that it replied to, comment that those comments replied to, and so on
 
-* Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment.
-    * "Oldest First" ordering: Expanding a backlink (in the header of a comment) will hide the original comment.
-    * "Newest First" ordering: Expanding a quote link (in the body of a comment) will hide the original comment.
+* Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment
+    * "Oldest First" ordering: Expanding a backlink (in the header of a comment) will hide the original comment
+    * "Newest First" ordering: Expanding a quote link (in the body of a comment) will hide the original comment
 ### Tweaks
 
 * Expanded comments show the username in the header
