@@ -12,7 +12,7 @@
 
 let commentController;
 
-// Despite the @run-at option, Firefox sometimes runs the userscript before the Fimfiction JS, which
+// Despite the @run-at option, the userscript is sometimes stil ran before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
 if (document.readyState == "complete") {
     init();
@@ -32,6 +32,10 @@ let ctCSS = `
 .ct--parent-link-highlight { text-decoration: underline; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
+
+// Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
+// `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
+// browsers is done server side (probably through user agent).
 
 function init() {
     let storyComments = document.getElementById("story_comments");
@@ -176,8 +180,6 @@ let commentControllerShell = {
                 forwardHide(quoteLink, 1);
                 quoteLink.classList.add("ct--expanded-link");
 
-                // is_mobile is a global declared in an inline script in <head>. It seems detection
-                // of mobile browsers is done server side (probably through user agent).
                 if (!is_mobile) {
                     // Add middot after username in .meta to separate it from the index. On mobile,
                     // the username is `display: block;`, so we don't need a separator.
@@ -214,7 +216,7 @@ let commentControllerShell = {
         let indexRange = getCommentIndexRange();
 
         // It's easier to number the comments off from an index than it is to extract the index from
-        // the <a> (as that <a> has no ID to easily get it by).
+        // the <a> (as that <a> has no ID to easily get it by and requires some processing).
         let ordering, startIndex;
         if (this.order === "ASC") {
             ordering = 1;
