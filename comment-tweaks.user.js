@@ -216,7 +216,7 @@ var commentControllerShell = {
                 forwardHide(quoteLink, 1);
                 quoteLink.classList.add("ct--expanded-link");
 
-                if (!is_mobile) {
+                if (!is_mobile && !isCommentDeleted(comment)) {
                     // Add middot after username in .meta to separate it from the index. On mobile,
                     // the username is `display: block;`, so we don't need a separator.
                     fQuery.insertAfter(clone.querySelector(".meta > .name"), createMiddot());
@@ -262,11 +262,7 @@ var commentControllerShell = {
 
     storeComments: function() {
         for (let comment of this.comment_list.children) {
-            // Is this a deleted comment?
-            if (
-                comment.firstElementChild.classList.contains("message") &&
-                comment.lastElementChild.classList.contains("hidden")
-            ) {
+            if (isCommentDeleted(comment)) {
                 continue;
             }
 
@@ -295,6 +291,13 @@ var commentControllerShell = {
         }
     }
 };
+
+function isCommentDeleted(comment) {
+    return (
+        comment.firstElementChild.classList.contains("message") &&
+        comment.lastElementChild.classList.contains("hidden")
+    );
+}
 
 function forwardHide(quoteLink, change) {
     // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
