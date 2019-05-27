@@ -259,7 +259,7 @@ var commentControllerShell = {
             let id = quoteLink.dataset.comment_id;
             let meta = this.commentMetadata[id];
             if (meta !== undefined) {
-                if (document.getElementById("comment_" + id) === null) {
+                if (this.comment_list.querySelector("#comment_" + id) === null) {
                     // Rewrite cross-page comments
                     quoteLink.textContent = `${meta.author} (${formatCommentIndex(meta.index)})`;
                 } else if (is_mobile) {
@@ -282,7 +282,9 @@ function forwardHide(quoteLink, change) {
         return;
     }
 
-    let comment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
+    let comment = commentController.comment_list.querySelector(
+        "#comment_" + quoteLink.dataset.comment_id
+    );
     let newCount = Number(comment.dataset.expandCount || 0) + change;
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
@@ -324,7 +326,9 @@ function collapseCommentTree(comment, collapse) {
         // We are careful to not select any quote links in expanded comments
         let quoteLinks = comment.querySelectorAll(`#comment_callbacks_${comment_id} > a`);
         for (let quoteLink of quoteLinks) {
-            let nextComment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
+            let nextComment = commentController.comment_list.querySelector(
+                "#comment_" + quoteLink.dataset.comment_id
+            );
             collapseCommentTree(nextComment, collapse);
         }
     } else {
