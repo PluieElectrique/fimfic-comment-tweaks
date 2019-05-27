@@ -380,7 +380,10 @@ function cloneComment(comment) {
 
     clone.removeAttribute("id");
     // Needed for comment collapsing
-    clone.querySelector(".comment_callbacks").removeAttribute("id");
+    let callbacks = clone.querySelector(".comment_callbacks");
+    if (callbacks !== null) {
+        callbacks.removeAttribute("id");
+    }
     // Get rid of the blue highlight caused by clicking on the comment's index or posting date
     clone.classList.remove("comment_selected");
 
