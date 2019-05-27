@@ -31,6 +31,7 @@ var ctCSS = `
 .ct--expanded-link { opacity: 0.7; }
 .ct--forward-hidden { display: none; }
 .ct--parent-link-highlight { text-decoration: underline; }
+.comment .data { padding-right: 0.3rem; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
 

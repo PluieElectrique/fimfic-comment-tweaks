@@ -33,6 +33,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 * When there are multiple quote links in an child comment, the link to the parent comment is underlined
 * Reduced 150ms delay to show comment when hovering over quote link to 85ms
 * Comments shown on hover are the full width of the comment list (as opposed to the width of their parent comment)
+* Increased comment width (by decreasing right padding) for deeper nesting
 
 ### Mobile
 
