@@ -11,6 +11,7 @@
 // ==/UserScript==
 
 var commentController;
+var comment_list;
 
 // Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
@@ -48,11 +49,12 @@ function init() {
     document.head.appendChild(style);
 
     commentController = App.GetControllerFromElement(storyComments);
+    comment_list = commentController.comment_list;
     Object.assign(commentController, commentControllerShell);
 
     if (is_mobile) {
         commentController.storeComments();
-        commentController.rewriteQuoteLinks(commentController.comment_list);
+        commentController.rewriteQuoteLinks(comment_list);
     }
     setupCollapseButtons();
 
@@ -69,33 +71,25 @@ function init() {
 }
 
 function setupEventListeners() {
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".ct--collapse-button",
-        "click",
-        evt => toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    fQuery.addScopedEventListener(comment_list, ".ct--collapse-button", "click", evt =>
+        toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
-    fQuery.addScopedEventListener(
-        commentController.comment_list,
-        ".comment_quote_link",
-        "mouseover",
-        evt => {
-            // Remove 150ms delay by preventing the normal event listener from firing
-            evt.stopPropagation();
-            // Mouseover events can sometimes be triggered on mobile, but there's no point. They
-            // just block the page.
-            if (is_mobile) {
-                return;
-            }
-            // Don't show popup quote for expanded links, links within collapsed comments, or links
-            // to the parent comment
-            let linkStatus = getQuoteLinkStatus(evt.target);
-            if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
-                commentController.beginShowQuote(evt.target);
-            }
+    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseover", evt => {
+        // Remove 150ms delay by preventing the normal event listener from firing
+        evt.stopPropagation();
+        // Mouseover events can sometimes be triggered on mobile, but there's no point. They
+        // just block the page.
+        if (is_mobile) {
+            return;
         }
-    );
+        // Don't show popup quote for expanded links, links within collapsed comments, or links
+        // to the parent comment
+        let linkStatus = getQuoteLinkStatus(evt.target);
+        if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
+            commentController.beginShowQuote(evt.target);
+        }
+    });
 
     // These event listeners are added as "global binders." That is, they are added to each element
     // that matches their selector. Because this binding is only done at load (and in a few other
@@ -106,7 +100,7 @@ function setupEventListeners() {
         .filter(binder => containerClasses.includes(binder.class))
         .forEach(binder => {
             fQuery.addScopedEventListener(
-                commentController.comment_list,
+                comment_list,
                 binder.selector,
                 binder.event,
                 binder.binder
@@ -282,9 +276,7 @@ function forwardHide(quoteLink, change) {
         return;
     }
 
-    let comment = commentController.comment_list.querySelector(
-        "#comment_" + quoteLink.dataset.comment_id
-    );
+    let comment = comment_list.querySelector("#comment_" + quoteLink.dataset.comment_id);
     let newCount = Number(comment.dataset.expandCount || 0) + change;
     if (newCount < 0) {
         throw new Error("Expand count cannot be less than 0");
@@ -297,7 +289,7 @@ function forwardHide(quoteLink, change) {
 }
 
 function setupCollapseButtons() {
-    for (let metaName of commentController.comment_list.querySelectorAll(".meta > .name")) {
+    for (let metaName of comment_list.querySelectorAll(".meta > .name")) {
         fQuery.insertAfter(metaName, createMiddot());
 
         let collapseButton = document.createElement("a");
@@ -326,7 +318,7 @@ function collapseCommentTree(comment, collapse) {
         // We are careful to not select any quote links in expanded comments
         let quoteLinks = comment.querySelectorAll(`#comment_callbacks_${comment_id} > a`);
         for (let quoteLink of quoteLinks) {
-            let nextComment = commentController.comment_list.querySelector(
+            let nextComment = comment_list.querySelector(
                 "#comment_" + quoteLink.dataset.comment_id
             );
             collapseCommentTree(nextComment, collapse);
@@ -338,7 +330,7 @@ function collapseCommentTree(comment, collapse) {
         // current comment, and then get the comments which have those backlinks.
         // This seems pretty inefficient, but it only uses DOM lookups, and doesn't require
         // extracting and storing data from the DOM, which I feel might increase complexity.
-        let quoteLinks = commentController.comment_list.querySelectorAll(
+        let quoteLinks = comment_list.querySelectorAll(
             `[id^='comment_callbacks_'] > a[data-comment_id='${comment_id}']`
         );
         for (let quoteLink of quoteLinks) {
