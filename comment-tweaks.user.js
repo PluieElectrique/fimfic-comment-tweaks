@@ -75,8 +75,8 @@ function setupEventListeners() {
         toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
     );
 
+    let cancelCallback = null;
     fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseover", evt => {
-        // Remove 150ms delay by preventing the normal event listener from firing
         evt.stopPropagation();
         // Mouseover events can sometimes be triggered on mobile, but there's no point. They
         // just block the page.
@@ -87,7 +87,15 @@ function setupEventListeners() {
         // to the parent comment
         let linkStatus = getQuoteLinkStatus(evt.target);
         if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
-            commentController.beginShowQuote(evt.target);
+            commentController.hoverTimeout = setTimeout(_ => {
+                cancelCallback = commentController.beginShowQuote(evt.target);
+            }, 85);
+        }
+    });
+    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", _ => {
+        if (cancelCallback !== null) {
+            cancelCallback();
+            cancelCallback = null;
         }
     });
 
@@ -152,7 +160,12 @@ var commentControllerShell = {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
 
+        let cancel = false;
         this.getComment(quoteLink.dataset.comment_id).then(comment => {
+            if (cancel) {
+                return;
+            }
+
             this.quote_container.classList.remove("hidden");
             if (this.quote_container.firstChild !== null) {
                 removeElement(this.quote_container.firstChild);
@@ -172,6 +185,10 @@ var commentControllerShell = {
 
             App.DispatchEvent(this.quote_container, "loadVisibleImages");
         });
+
+        return _ => {
+            cancel = true;
+        };
     },
 
     expandQuote: function(quoteLink) {
