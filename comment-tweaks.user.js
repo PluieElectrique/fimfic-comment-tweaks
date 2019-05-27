@@ -383,7 +383,7 @@ function cloneComment(comment) {
     }
 
     // Remove quotes
-    for (let inlineQuote of clone.getElementsByClassName("inline-quote")) {
+    for (let inlineQuote of clone.querySelectorAll(".inline-quote")) {
         removeElement(inlineQuote);
     }
 
