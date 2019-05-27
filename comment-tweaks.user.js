@@ -12,7 +12,7 @@
 
 var commentController;
 
-// Despite the @run-at option, the userscript is sometimes stil ran before the Fimfiction JS, which
+// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
 if (document.readyState == "complete") {
     init();
