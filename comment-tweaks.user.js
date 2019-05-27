@@ -295,7 +295,7 @@ function forwardHide(quoteLink, change) {
 }
 
 function setupCollapseButtons() {
-    for (let metaName of document.querySelectorAll(".meta > .name")) {
+    for (let metaName of commentController.comment_list.querySelectorAll(".meta > .name")) {
         fQuery.insertAfter(metaName, createMiddot());
 
         let collapseButton = document.createElement("a");
