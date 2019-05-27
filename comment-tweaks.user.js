@@ -237,7 +237,7 @@ var commentControllerShell = {
             });
         } else {
             // Update forward hiding counts for all expanded links
-            for (let quoteLink of expandedComment.getElementsByClassName("ct--expanded-link")) {
+            for (let quoteLink of expandedComment.querySelectorAll(".ct--expanded-link")) {
                 forwardHide(quoteLink, -1);
             }
             removeElement(expandedComment);
@@ -399,7 +399,7 @@ function cloneComment(comment) {
     // to links in expanded comments)
     clone.classList.remove("ct--forward-hidden");
     clone.classList.remove("ct--collapsed-comment");
-    for (let expandedLink of clone.getElementsByClassName("ct--expanded-link")) {
+    for (let expandedLink of clone.querySelectorAll(".ct--expanded-link")) {
         expandedLink.classList.remove("ct--expanded-link");
     }
 
