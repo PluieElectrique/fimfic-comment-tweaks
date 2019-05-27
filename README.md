@@ -26,6 +26,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 * Hovering on an expanded link does not show its comment
 * Expanded comments do not expand with their own expanded comments
 * Embeds (image, YouTube, etc) work correctly in expanded comments
+* The previous/next page buttons update the URL hash
 
 ### Cosmetic
 

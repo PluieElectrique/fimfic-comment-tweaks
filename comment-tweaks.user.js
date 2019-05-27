@@ -246,6 +246,18 @@ var commentControllerShell = {
         }
     },
 
+    previous: function() {
+        if (1 < this.current_page) {
+            location.hash = "#page/" + (this.current_page - 1);
+        }
+    },
+
+    next: function() {
+        if (this.current_page < this.num_pages) {
+            location.hash = "#page/" + (this.current_page + 1);
+        }
+    },
+
     /* Extra methods */
 
     storeComments: function() {
