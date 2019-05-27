@@ -237,41 +237,29 @@ var commentControllerShell = {
     /* Extra methods */
 
     storeComments: function() {
-        let indexRange = getCommentIndexRange();
-
-        // It's easier to number the comments off from an index than it is to extract the index from
-        // the <a> (as that <a> has no ID to easily get it by and requires some processing).
-        let ordering, startIndex;
-        if (this.order === "ASC") {
-            ordering = 1;
-            startIndex = indexRange[0];
-        } else {
-            ordering = -1;
-            startIndex = indexRange[1];
-        }
-
-        Array.from(this.comment_list.children).forEach((comment, i) => {
+        for (let comment of this.comment_list.children) {
             // Is this a deleted comment?
             if (
                 comment.firstElementChild.classList.contains("message") &&
                 comment.lastElementChild.classList.contains("hidden")
             ) {
-                return;
+                continue;
             }
 
+            let link = comment.querySelector("a[href^='#comment/']");
             this.commentMetadata[comment.dataset.comment_id] = {
                 author: comment.dataset.author,
-                index: startIndex + ordering * i
+                index: Number(link.textContent.slice(1).replace(/,/g, ""))
             };
-        });
+        }
     },
 
     rewriteQuoteLinks: function(elem) {
-        let indexRange = getCommentIndexRange();
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
-            let meta = this.commentMetadata[quoteLink.dataset.comment_id];
+            let id = quoteLink.dataset.comment_id;
+            let meta = this.commentMetadata[id];
             if (meta !== undefined) {
-                if (meta.index < indexRange[0] || indexRange[1] < meta.index) {
+                if (document.getElementById("comment_" + id) === null) {
                     // Rewrite cross-page comments
                     quoteLink.textContent = `${meta.author} (${formatCommentIndex(meta.index)})`;
                 } else if (is_mobile) {
@@ -283,26 +271,6 @@ var commentControllerShell = {
         }
     }
 };
-
-function getCommentIndexRange() {
-    // We could extract the index from the .start-index, .end-index, and .num-comments elements.
-    // But, because of how goToPage works (it doesn't share the index data with the promise
-    // callback, and any callback we did pass would run before it updated the index elements), it's
-    // easier to do this.
-    let extractIndex = comment =>
-        Number(
-            comment
-                .querySelector(`a[href='#comment/${comment.dataset.comment_id}']`)
-                .textContent.slice(1)
-                .replace(/,/g, "")
-        );
-
-    let firstIndex = extractIndex(commentController.comment_list.firstElementChild);
-    let lastIndex = extractIndex(commentController.comment_list.lastElementChild);
-
-    // The order depends on the comment sorting
-    return [Math.min(firstIndex, lastIndex), Math.max(firstIndex, lastIndex)];
-}
 
 function forwardHide(quoteLink, change) {
     // Callbacks expand newer comments into older ones. So, in ASC order (oldest to newest), we
