@@ -345,23 +345,8 @@ function collapseCommentTree(comment, collapse) {
 
 // Clone a comment and reset it
 function cloneComment(comment) {
-    // Remove quotes to avoid cloning them
-    let commentCallbacks = comment.querySelector(".comment_callbacks");
-    let callbackQuotes = commentCallbacks.querySelectorAll(".inline-quote");
-    for (let quote of callbackQuotes) {
-        removeElement(quote);
-    }
-    let commentData = comment.querySelector(".comment_data");
-    let dataQuotes = [];
-    for (let quote of commentData.querySelectorAll(".inline-quote")) {
-        // Get the link first. If we remove the quote first, then the sibling will be null.
-        dataQuotes.push({
-            link: quote.previousElementSibling,
-            quote: quote.parentNode.removeChild(quote)
-        });
-    }
-
     let clone = comment.cloneNode(true);
+
     clone.removeAttribute("id");
     // Needed for comment collapsing
     clone.querySelector(".comment_callbacks").removeAttribute("id");
@@ -383,12 +368,9 @@ function cloneComment(comment) {
         removeElement(collapseButton);
     }
 
-    // Restore quotes
-    for (let quote of callbackQuotes) {
-        commentCallbacks.appendChild(quote);
-    }
-    for (let quote of dataQuotes) {
-        fQuery.insertAfter(quote.link, quote.quote);
+    // Remove quotes
+    for (let inlineQuote of clone.getElementsByClassName("inline-quote")) {
+        removeElement(inlineQuote);
     }
 
     return clone;
