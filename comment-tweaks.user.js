@@ -351,22 +351,27 @@ function collapseCommentTree(comment, collapse) {
 
     // We always collapse comments which appear later in the comment list. Exactly which quote links
     // we search through depends on the sorting order.
-    let quoteLinks =
-        commentController.order === "ASC"
-            ? comment.querySelectorAll(".comment_callback")
-            : comment.querySelectorAll(".comment_quote_link:not(.comment_callback)");
-
-    for (let quoteLink of quoteLinks) {
-        // In DESC sorting, we need to ignore links to comments on other pages. This also means
-        // avoiding comments which have been stored in quote_container and hidden_comments.
-        let nextComment = commentController.comment_list.querySelector(
-            "#comment_" + quoteLink.dataset.comment_id
-        );
-        if (nextComment === null) {
-            continue;
+    let comment_id = comment.dataset.comment_id;
+    if (commentController.order === "ASC") {
+        // We are careful to not select any quote links in expanded comments
+        let quoteLinks = comment.querySelectorAll(`#comment_callbacks_${comment_id} > a`);
+        for (let quoteLink of quoteLinks) {
+            let nextComment = document.getElementById("comment_" + quoteLink.dataset.comment_id);
+            collapseCommentTree(nextComment, collapse);
         }
-
-        collapseCommentTree(nextComment, collapse);
+    } else {
+        // There's no easy way to select the quote links in the .data of this comment and ignore
+        // links in expanded comments. It would require some kind of :not(descendant of inline
+        // quote) selector, which is not possible. Instead, we select backlinks which point to the
+        // current comment, and then get the comments which have those backlinks.
+        // This seems pretty inefficient, but it only uses DOM lookups, and doesn't require
+        // extracting and storing data from the DOM, which I feel might increase complexity.
+        let quoteLinks = commentController.comment_list.querySelectorAll(
+            `[id^='comment_callbacks_'] > a[data-comment_id='${comment_id}']`
+        );
+        for (let quoteLink of quoteLinks) {
+            collapseCommentTree(fQuery.closestParent(quoteLink, ".comment"), collapse);
+        }
     }
 }
 
@@ -390,6 +395,8 @@ function cloneComment(comment) {
 
     let clone = comment.cloneNode(true);
     clone.removeAttribute("id");
+    // Needed for comment collapsing
+    clone.querySelector(".comment_callbacks").removeAttribute("id");
     // Get rid of the blue highlight caused by clicking on the comment's index or posting date
     clone.classList.remove("comment_selected");
 
