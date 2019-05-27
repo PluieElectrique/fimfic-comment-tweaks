@@ -180,7 +180,7 @@ var commentControllerShell = {
 
             let parentRect = this.comment_list.getBoundingClientRect();
             let style = this.quote_container.style;
-            style.top = quoteLink.getBoundingClientRect().top + fQuery.scrollTop() + 23 + "px";
+            style.top = quoteLink.getBoundingClientRect().bottom + fQuery.scrollTop() + 8 + "px";
             style.left = parentRect.left - 6 + "px";
             style.width = parentRect.width + 12 + "px";
 
