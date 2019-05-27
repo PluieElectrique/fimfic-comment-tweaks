@@ -390,6 +390,11 @@ function cloneComment(comment) {
     // Get rid of the blue highlight caused by clicking on the comment's index or posting date
     clone.classList.remove("comment_selected");
 
+    // Remove quotes
+    for (let inlineQuote of clone.querySelectorAll(".inline-quote")) {
+        removeElement(inlineQuote);
+    }
+
     // Remove ct classes (we don't need to remove parent-link-highlight because it's only applied
     // to links in expanded comments)
     clone.classList.remove("ct--forward-hidden");
@@ -403,11 +408,6 @@ function cloneComment(comment) {
     if (collapseButton !== null) {
         removeElement(collapseButton.nextElementSibling);
         removeElement(collapseButton);
-    }
-
-    // Remove quotes
-    for (let inlineQuote of clone.querySelectorAll(".inline-quote")) {
-        removeElement(inlineQuote);
     }
 
     return clone;
