@@ -131,7 +131,7 @@ var commentControllerShell = {
 
         return CommentListController.prototype.getComment.call(this, id).then(comment => {
             let meta = this.commentMetadata[id];
-            let link = comment.querySelector(`[href='#comment/${id}']`);
+            let link = comment.querySelector(`a[href='#comment/${id}']`);
             if (meta !== undefined) {
                 // Rewrite comment index
                 link.textContent = formatCommentIndex(meta.index);
@@ -348,7 +348,7 @@ function collapseCommentTree(comment, collapse) {
         // This seems pretty inefficient, but it only uses DOM lookups, and doesn't require
         // extracting and storing data from the DOM, which I feel might increase complexity.
         let quoteLinks = comment_list.querySelectorAll(
-            `[id^='comment_callbacks_'] > a[data-comment_id='${comment_id}']`
+            `span[id^='comment_callbacks_'] > a[data-comment_id='${comment_id}']`
         );
         for (let quoteLink of quoteLinks) {
             collapseCommentTree(fQuery.closestParent(quoteLink, ".comment"), collapse);
