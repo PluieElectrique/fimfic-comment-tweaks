@@ -43,7 +43,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Mobile
 
-On mobile, the main difference is that there are no callbacks (as is normal). This means that collapsing a comment will collapse just that comment, and not any of its descendants.
+On mobile, the main difference is that there are no callbacks (as is normal). This means that collapsing a comment will collapse just that comment, and not any of its descendants. This is the case in both "Oldest First" and "Newest First" orders.
 
 * Disabled showing comments on hover (`mouseover` events can sometimes be triggered)
 
