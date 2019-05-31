@@ -29,6 +29,7 @@ var ctCSS = `
   .inline-quote .meta > .name { display: inline; }
 }
 `;
+const QUOTE_LINK_HOVER_DELAY = 85;
 
 // Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
 // `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
@@ -85,7 +86,7 @@ function setupEventListeners() {
         if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
             commentController.hoverTimeout = setTimeout(() => {
                 cancelCallback = commentController.beginShowQuote(evt.target);
-            }, 85);
+            }, QUOTE_LINK_HOVER_DELAY);
         }
     });
     fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", () => {
