@@ -121,7 +121,7 @@ function setupEventListeners() {
 
 // A wrapper object that will be assigned onto the real comment controller
 var commentControllerShell = {
-    // Map from comment number (`data-comment_id`) to { author, index }
+    // Map from comment ID to { author: string; index?: number; deleted?: boolean }
     commentMetadata: {},
 
     /* Methods that shadow existing methods */
@@ -135,7 +135,7 @@ var commentControllerShell = {
         return CommentListController.prototype.getComment.call(this, id).then(comment => {
             let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
-            if (meta !== undefined) {
+            if (meta !== undefined && !meta.deleted) {
                 // Rewrite comment index
                 link.textContent = formatCommentIndex(meta.index);
             } else {
@@ -268,14 +268,17 @@ var commentControllerShell = {
     storeComments: function() {
         for (let comment of this.comment_list.children) {
             if (isCommentDeleted(comment)) {
-                continue;
+                this.commentMetadata[comment.dataset.comment_id] = {
+                    author: comment.dataset.author,
+                    deleted: true
+                };
+            } else {
+                let link = comment.querySelector("a[href^='#comment/']");
+                this.commentMetadata[comment.dataset.comment_id] = {
+                    author: comment.dataset.author,
+                    index: Number(link.textContent.slice(1).replace(/,/g, ""))
+                };
             }
-
-            let link = comment.querySelector("a[href^='#comment/']");
-            this.commentMetadata[comment.dataset.comment_id] = {
-                author: comment.dataset.author,
-                index: Number(link.textContent.slice(1).replace(/,/g, ""))
-            };
         }
     },
 
@@ -284,7 +287,9 @@ var commentControllerShell = {
             let id = quoteLink.dataset.comment_id;
             let meta = this.commentMetadata[id];
             if (meta !== undefined) {
-                if (this.comment_list.querySelector("#comment_" + id) === null) {
+                if (meta.deleted) {
+                    quoteLink.textContent = `${meta.author} (deleted)`;
+                } else if (this.comment_list.querySelector("#comment_" + id) === null) {
                     // Rewrite cross-page comments
                     quoteLink.textContent = `${meta.author} (${formatCommentIndex(meta.index)})`;
                 } else if (is_mobile) {

@@ -21,6 +21,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 * Expanded comments show the username in the header
 * When possible, cross-page quote links show the username and comment index instead of the comment ID
 * When possible, cross-page comments show the comment index in the header instead of the comment ID (If not, the comment ID will be shown without a "#" before it to differentiate it from an index)
+* When possible, quote links to deleted comments are marked with "(deleted)".
 * Comments expanded from callbacks are grouped together below the comment header (Normally, expanded comments are inserted after their callbacks, which can push down unexpanded callbacks)
 * Quote links to the parent comment are disabled (somewhat prevents infinite expanding)
 * Hovering on an expanded link does not show its comment
