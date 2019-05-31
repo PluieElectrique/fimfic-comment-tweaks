@@ -164,11 +164,6 @@ var commentControllerShell = {
                 return;
             }
 
-            this.quote_container.classList.remove("hidden");
-            if (this.quote_container.firstChild !== null) {
-                removeElement(this.quote_container.firstChild);
-            }
-
             let parent = fQuery.closestParent(quoteLink, ".comment");
 
             let clone = cloneComment(comment);
@@ -187,6 +182,13 @@ var commentControllerShell = {
         return () => {
             cancel = true;
         };
+    },
+
+    endShowQuote: function() {
+        clearTimeout(this.hoverTimeout);
+        if (this.quote_container.firstChild !== null) {
+            removeElement(this.quote_container.firstChild);
+        }
     },
 
     expandQuote: function(quoteLink) {
