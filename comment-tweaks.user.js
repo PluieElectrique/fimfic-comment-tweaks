@@ -24,8 +24,10 @@ var ctCSS = `
 .ct--expanded-link { opacity: 0.7; }
 .ct--forward-hidden { display: none; }
 .ct--parent-link-highlight { text-decoration: underline; }
-.comment .data { padding-right: 0.3rem; }
-@media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
+@media all and (min-width: 701px) {
+  .comment .data { padding-right: 0.3rem; }
+  .inline-quote .meta > .name { display: inline; }
+}
 `;
 
 // Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
