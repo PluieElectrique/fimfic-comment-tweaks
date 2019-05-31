@@ -90,12 +90,12 @@ function setupEventListeners() {
         // to the parent comment
         let linkStatus = getQuoteLinkStatus(evt.target);
         if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
-            commentController.hoverTimeout = setTimeout(_ => {
+            commentController.hoverTimeout = setTimeout(() => {
                 cancelCallback = commentController.beginShowQuote(evt.target);
             }, 85);
         }
     });
-    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", _ => {
+    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", () => {
         if (cancelCallback !== null) {
             cancelCallback();
             cancelCallback = null;
@@ -189,7 +189,7 @@ var commentControllerShell = {
             App.DispatchEvent(this.quote_container, "loadVisibleImages");
         });
 
-        return _ => {
+        return () => {
             cancel = true;
         };
     },
