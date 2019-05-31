@@ -118,12 +118,7 @@ var commentControllerShell = {
     /* Methods that shadow existing methods */
 
     getComment: function(id) {
-        let comment = document.getElementById("comment_" + id);
-        if (comment !== null) {
-            return new Promise(f => f(comment));
-        }
-
-        return CommentListController.prototype.getComment.call(this, id).then(comment => {
+        let rewriteComment = comment => {
             let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
             if (meta !== undefined && !meta.deleted) {
@@ -131,11 +126,20 @@ var commentControllerShell = {
                 link.textContent = formatCommentIndex(meta.index);
             } else {
                 // Remove "#" to avoid confusing comment IDs with comment indexes
-                link.textContent = link.textContent.slice(1);
+                link.textContent = link.textContent.replace("#", "");
             }
             this.rewriteQuoteLinks(comment);
             return comment;
-        });
+        };
+
+        let comment = document.getElementById("comment_" + id);
+        if (comment !== null) {
+            // We always rewrite the comment just in case we've stored new metadata that we didn't
+            // have before.
+            return new Promise(f => f(rewriteComment(comment)));
+        } else {
+            return CommentListController.prototype.getComment.call(this, id).then(rewriteComment);
+        }
     },
 
     setupQuotes: function() {
