@@ -371,8 +371,8 @@ function collapseCommentTree(comment, collapse) {
     } else {
         // There's no easy way to select the quote links in the .data of this comment and ignore
         // links in expanded comments. It would require some kind of :not(descendant of inline
-        // quote) selector, which is not possible. Instead, we select backlinks which point to the
-        // current comment, and then get the comments which have those backlinks.
+        // quote) selector, which is not possible. Instead, we select callbacks which point to the
+        // current comment, and then get the comments which have those callbacks.
         // This seems pretty inefficient, but it only uses DOM lookups, and doesn't require
         // extracting and storing data from the DOM, which I feel might increase complexity.
         let quoteLinks = comment_list.querySelectorAll(
