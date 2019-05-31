@@ -28,14 +28,6 @@ var ctCSS = `
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
 
-// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
-// causes errors. So, we wait for the page to be fully loaded.
-if (document.readyState == "complete") {
-    init();
-} else {
-    window.addEventListener("load", init);
-}
-
 // Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
 // `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
 // browsers is done server side (probably through user agent).
@@ -466,4 +458,12 @@ function createMiddot() {
 
 function removeElement(elem) {
     elem.parentNode.removeChild(elem);
+}
+
+// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
+// causes errors. So, we wait for the page to be fully loaded.
+if (document.readyState == "complete") {
+    init();
+} else {
+    window.addEventListener("load", init);
 }
