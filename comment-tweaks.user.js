@@ -205,6 +205,9 @@ var commentControllerShell = {
 
         this.endShowQuote();
 
+        // This probably causes a bug when two links the same comment are expanded, and the bottom
+        // is collapsed. The top comment will disappear instead of the bottom. I don't think it's
+        // important enough to fix though.
         let linkedId = quoteLink.dataset.comment_id;
         let expandedComment = quoteLink.parentNode.querySelector(
             `.comment[data-comment_id='${linkedId}']`
