@@ -3,11 +3,14 @@
 // @description    Tweaks for Fimfiction comments
 // @author         Pluie
 // @version        0.1.0
+// @license        MIT
 // @homepageURL    https://github.com/PluieElectrique/fimfic-comment-tweaks
+// @supportURL     https://github.com/PluieElectrique/fimfic-comment-tweaks/issues
 // @downloadURL    https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js
-// @updateURL      https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js
 // @match          *://www.fimfiction.net/*
+// @grant          none
 // @run-at         document-idle
+// @noframes
 // ==/UserScript==
 
 "use strict";
