@@ -14,15 +14,6 @@
 
 var commentController;
 var comment_list;
-
-// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
-// causes errors. So, we wait for the page to be fully loaded.
-if (document.readyState == "complete") {
-    init();
-} else {
-    window.addEventListener("load", init);
-}
-
 var ctCSS = `
 .ct--collapse-button { padding: 3px; }
 .ct--collapsed-comment .author > .avatar { display: none; }
@@ -36,6 +27,14 @@ var ctCSS = `
 .comment .data { padding-right: 0.3rem; }
 @media all and (min-width: 701px) { .inline-quote .meta > .name { display: inline; } }
 `;
+
+// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
+// causes errors. So, we wait for the page to be fully loaded.
+if (document.readyState == "complete") {
+    init();
+} else {
+    window.addEventListener("load", init);
+}
 
 // Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
 // `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
