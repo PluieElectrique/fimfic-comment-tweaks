@@ -10,6 +10,8 @@
 // @run-at         document-idle
 // ==/UserScript==
 
+"use strict";
+
 var commentController;
 var comment_list;
 
