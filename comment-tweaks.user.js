@@ -30,6 +30,7 @@ const ctCSS = `
 .ct--collapsed-comment .comment_callbacks > div { display: none; }
 .ct--collapsed-comment .comment_data { display: none; }
 .ct--collapsed-comment .comment_information:after { height: 0; }
+.ct--deleted-link { text-decoration: line-through; }
 .ct--expanded-link { opacity: 0.7; }
 .ct--forward-hidden { display: none; }
 .ct--parent-link-highlight { text-decoration: underline; }
@@ -50,14 +51,17 @@ const commentControllerShell = {
         let rewriteComment = comment => {
             let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
-            if (meta !== undefined && !meta.deleted) {
-                // Rewrite comment index
-                link.textContent = formatCommentIndex(meta.index);
-            } else {
-                // Remove "#" to avoid confusing comment IDs with comment indexes
-                link.textContent = link.textContent.replace("#", "");
+            // An equivalent way of checking if a comment is deleted
+            if (link !== null) {
+                if (meta === undefined) {
+                    // Remove "#" to avoid confusing comment IDs with comment indexes
+                    link.textContent = link.textContent.replace("#", "");
+                } else {
+                    // Rewrite comment index
+                    link.textContent = formatCommentIndex(meta.index);
+                }
+                this.rewriteQuoteLinks(comment);
             }
-            this.rewriteQuoteLinks(comment);
             return comment;
         };
 
@@ -168,8 +172,8 @@ const commentControllerShell = {
             });
         } else {
             // Update forward hiding counts for all expanded links
-            for (let quoteLink of expandedComment.querySelectorAll(".ct--expanded-link")) {
-                forwardHide(quoteLink, -1);
+            for (let expandedLink of expandedComment.querySelectorAll(".ct--expanded-link")) {
+                forwardHide(expandedLink, -1);
             }
             removeElement(expandedComment);
             forwardHide(quoteLink, -1);
@@ -214,7 +218,8 @@ const commentControllerShell = {
             let meta = this.commentMetadata[id];
             if (meta !== undefined) {
                 if (meta.deleted) {
-                    quoteLink.textContent = `${meta.author} (deleted)`;
+                    quoteLink.textContent = meta.author;
+                    quoteLink.classList.add("ct--deleted-link");
                 } else if (this.comment_list.querySelector("#comment_" + id) === null) {
                     // Rewrite cross-page comments
                     quoteLink.textContent = `${meta.author} (${formatCommentIndex(meta.index)})`;
@@ -417,8 +422,8 @@ function cloneComment(comment) {
         removeElement(inlineQuote);
     }
 
-    // Remove ct classes (we don't need to remove parent-link-highlight because it's only applied
-    // to links in expanded comments)
+    // Remove ct classes. We don't remove parent-link-highlight because it's only applied to links
+    // in expanded comments. It should be fine to leave deleted-link.
     clone.classList.remove("ct--forward-hidden");
     clone.classList.remove("ct--collapsed-comment");
     for (let expandedLink of clone.querySelectorAll(".ct--expanded-link")) {

@@ -33,7 +33,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 * Hovering on an expanded link does not show its comment
 * Quote links to the parent comment are disabled (helps prevent infinite/redundant expansion)
 * Quote links broken across two lines cannot cause flickering (the hover comment is positioned from the bottom of the quote link)
-* When possible, quote links to deleted comments are marked with "(deleted)"
+* When possible, quote links to deleted comments are marked with a strikethrough
 
 ### Cosmetic
 
@@ -62,7 +62,7 @@ Most of these features don't apply to mobile, but the script does work on the mo
 
 ## Thanks
 
-The comment collapsing, forward hiding, and callback grouping behavior is based off of [4chan X](https://www.4chan-x.net/).
+Comment collapsing, forward hiding, callback grouping, and other features were inspired by [4chan X](https://www.4chan-x.net/).
 
 ## Legal
 
