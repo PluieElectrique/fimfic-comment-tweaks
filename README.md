@@ -16,6 +16,8 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ![Comment collapse button in the header of a comment.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/comment-collapse-button.png)
 
+![Animation of a comment and descendant collapsing.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/comment-collapsing.gif)
+
 * Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment
     * "Oldest First" ordering: Expanding a callback (in the header of a comment) hides the original comment
     * "Newest First" ordering: Expanding a quote link (in the body of a comment) hides the original comment
