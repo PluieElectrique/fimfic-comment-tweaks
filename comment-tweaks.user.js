@@ -13,10 +13,16 @@
 // @noframes
 // ==/UserScript==
 
+// Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
+// `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
+// browsers is done server side (probably through user agent).
+
 "use strict";
 
 let commentController;
 let comment_list;
+
+const QUOTE_LINK_HOVER_DELAY = 85;
 const ctCSS = `
 .ct--collapse-button { padding: 3px; }
 .ct--collapsed-comment .author > .avatar { display: none; }
@@ -32,92 +38,9 @@ const ctCSS = `
   .inline-quote .meta > .name { display: inline; }
 }
 `;
-const QUOTE_LINK_HOVER_DELAY = 85;
-
-// Note about mobile: To be consistent with Fimfiction, this script detects mobile by using
-// `is_mobile`, a global declared in an inline script in <head>. It seems detection of mobile
-// browsers is done server side (probably through user agent).
-
-function init() {
-    let storyComments = document.getElementById("story_comments");
-    if (storyComments === null) {
-        return;
-    }
-
-    let style = document.createElement("style");
-    style.textContent = ctCSS;
-    document.head.appendChild(style);
-
-    commentController = App.GetControllerFromElement(storyComments);
-    comment_list = commentController.comment_list;
-    Object.assign(commentController, commentControllerShell);
-
-    if (is_mobile) {
-        commentController.storeComments();
-        commentController.rewriteQuoteLinks(comment_list);
-    }
-    setupCollapseButtons();
-
-    setupEventListeners();
-
-    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
-    // the original code, it's checked for on each call. Here, we create it at init.
-    if (commentController.quote_container === null) {
-        let container = document.createElement("div");
-        container.className = "quote_container";
-        document.body.appendChild(container);
-        commentController.quote_container = container;
-    }
-}
-
-function setupEventListeners() {
-    fQuery.addScopedEventListener(comment_list, ".ct--collapse-button", "click", evt =>
-        toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
-    );
-
-    let cancelCallback = null;
-    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseover", evt => {
-        evt.stopPropagation();
-        // Mouseover events can sometimes be triggered on mobile, but there's no point. They
-        // just block the page.
-        if (is_mobile) {
-            return;
-        }
-        // Don't show popup quote for expanded links, links within collapsed comments, or links
-        // to the parent comment
-        let linkStatus = getQuoteLinkStatus(evt.target);
-        if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
-            commentController.hoverTimeout = setTimeout(() => {
-                cancelCallback = commentController.beginShowQuote(evt.target);
-            }, QUOTE_LINK_HOVER_DELAY);
-        }
-    });
-    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", () => {
-        if (cancelCallback !== null) {
-            cancelCallback();
-            cancelCallback = null;
-        }
-    });
-
-    // These event listeners are added as "global binders." That is, they are added to each element
-    // that matches their selector. Because this binding is only done at load (and in a few other
-    // cases), and because cloneNode does not copy event listeners, embeds will not work in expanded
-    // comments. Listeners scoped to the comment list let all embeds work.
-    const containerClasses = ["user_image_link", "youtube_container", "embed-container"];
-    App.globalBinders
-        .filter(binder => containerClasses.includes(binder.class))
-        .forEach(binder => {
-            fQuery.addScopedEventListener(
-                comment_list,
-                binder.selector,
-                binder.event,
-                binder.binder
-            );
-        });
-}
 
 // A wrapper object that will be assigned onto the real comment controller
-var commentControllerShell = {
+const commentControllerShell = {
     // Map from comment ID to { author: string; index?: number; deleted?: boolean }
     commentMetadata: {},
 
@@ -305,6 +228,92 @@ var commentControllerShell = {
     },
 };
 
+// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
+// causes errors. So, we wait for the page to be fully loaded.
+if (document.readyState === "complete") {
+    init();
+} else {
+    window.addEventListener("load", init);
+}
+
+function init() {
+    let storyComments = document.getElementById("story_comments");
+    if (storyComments === null) {
+        return;
+    }
+
+    let style = document.createElement("style");
+    style.textContent = ctCSS;
+    document.head.appendChild(style);
+
+    commentController = App.GetControllerFromElement(storyComments);
+    comment_list = commentController.comment_list;
+    Object.assign(commentController, commentControllerShell);
+
+    if (is_mobile) {
+        commentController.storeComments();
+        commentController.rewriteQuoteLinks(comment_list);
+    }
+    setupCollapseButtons();
+
+    setupEventListeners();
+
+    // quote_container is used by beginShowQuote to store the hovered quote (when there is one). In
+    // the original code, it's checked for on each call. Here, we create it at init.
+    if (commentController.quote_container === null) {
+        let container = document.createElement("div");
+        container.className = "quote_container";
+        document.body.appendChild(container);
+        commentController.quote_container = container;
+    }
+}
+
+function setupEventListeners() {
+    fQuery.addScopedEventListener(comment_list, ".ct--collapse-button", "click", evt =>
+        toggleCollapseCommentTree(fQuery.closestParent(evt.target, ".comment"))
+    );
+
+    let cancelCallback = null;
+    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseover", evt => {
+        evt.stopPropagation();
+        // Mouseover events can sometimes be triggered on mobile, but there's no point. They
+        // just block the page.
+        if (is_mobile) {
+            return;
+        }
+        // Don't show popup quote for expanded links, links within collapsed comments, or links
+        // to the parent comment
+        let linkStatus = getQuoteLinkStatus(evt.target);
+        if (!linkStatus.isExpanded && !linkStatus.parentCollapsed && !linkStatus.isParentLink) {
+            commentController.hoverTimeout = setTimeout(() => {
+                cancelCallback = commentController.beginShowQuote(evt.target);
+            }, QUOTE_LINK_HOVER_DELAY);
+        }
+    });
+    fQuery.addScopedEventListener(comment_list, ".comment_quote_link", "mouseout", () => {
+        if (cancelCallback !== null) {
+            cancelCallback();
+            cancelCallback = null;
+        }
+    });
+
+    // These event listeners are added as "global binders." That is, they are added to each element
+    // that matches their selector. Because this binding is only done at load (and in a few other
+    // cases), and because cloneNode does not copy event listeners, embeds will not work in expanded
+    // comments. Listeners scoped to the comment list let all embeds work.
+    const containerClasses = ["user_image_link", "youtube_container", "embed-container"];
+    App.globalBinders
+        .filter(binder => containerClasses.includes(binder.class))
+        .forEach(binder => {
+            fQuery.addScopedEventListener(
+                comment_list,
+                binder.selector,
+                binder.event,
+                binder.binder
+            );
+        });
+}
+
 function isCommentDeleted(comment) {
     return (
         comment.firstElementChild.classList.contains("message") &&
@@ -470,12 +479,4 @@ function createMiddot() {
 
 function removeElement(elem) {
     elem.parentNode.removeChild(elem);
-}
-
-// Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
-// causes errors. So, we wait for the page to be fully loaded.
-if (document.readyState === "complete") {
-    init();
-} else {
-    window.addEventListener("load", init);
 }
