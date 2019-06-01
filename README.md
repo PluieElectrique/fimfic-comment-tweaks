@@ -26,8 +26,9 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Quote links
 
-* Hovering on an expanded link does not show its comment
 * When possible, cross-page quote links show the username and comment index instead of the comment ID
+![Cross-page quote link showing the username and comment index.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/cross-page-quote-link.png)
+* Hovering on an expanded link does not show its comment
 * Quote links to the parent comment are disabled (helps prevent infinite/redundant expansion)
 * Quote links broken across two lines cannot cause flickering (the hover comment is positioned from the bottom of the quote link)
 * When possible, quote links to deleted comments are marked with "(deleted)"
