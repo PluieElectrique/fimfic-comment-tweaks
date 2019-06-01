@@ -62,12 +62,12 @@ const commentControllerShell = {
         };
 
         let comment = document.getElementById("comment_" + id);
-        if (comment !== null) {
+        if (comment === null) {
+            return CommentListController.prototype.getComment.call(this, id).then(rewriteComment);
+        } else {
             // We always rewrite the comment just in case we've stored new metadata that we didn't
             // have before.
             return new Promise(f => f(rewriteComment(comment)));
-        } else {
-            return CommentListController.prototype.getComment.call(this, id).then(rewriteComment);
         }
     },
 
@@ -178,7 +178,7 @@ const commentControllerShell = {
     },
 
     previous() {
-        if (1 < this.current_page) {
+        if (this.current_page > 1) {
             location.hash = `#page/${this.current_page - 1}`;
         }
     },
