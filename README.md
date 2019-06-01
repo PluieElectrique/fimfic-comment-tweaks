@@ -35,11 +35,11 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Cosmetic
 
-* 150ms quote link hover delay shortened to 85ms
-* Comments shown on hover are the width of the comment list (instead of the width of their parent comment)
 * When there are multiple quote links in a child comment, the link to the parent comment is underlined
+![Underlined parent link in an expanded child comment with multiple quote links.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/parent-link-highlight.png)
+* Comments shown on hover are the width of the comment list (instead of the width of their parent comment)
+* 150ms quote link hover delay shortened to 85ms
 * Expanded quote links are grayed out
-* Increased comment width (by decreasing right padding) for deeper nesting
 
 ### Miscellaneous
 
