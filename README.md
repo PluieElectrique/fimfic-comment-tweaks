@@ -22,6 +22,8 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
     * "Oldest First" ordering: Expanding a callback (in the header of a comment) hides the original comment
     * "Newest First" ordering: Expanding a quote link (in the body of a comment) hides the original comment
 
+![Animation of forward hiding.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/forward-hiding.gif)
+
 ### Quote links
 
 * Hovering on an expanded link does not show its comment
