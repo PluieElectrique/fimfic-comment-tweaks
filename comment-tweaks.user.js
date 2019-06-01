@@ -15,9 +15,9 @@
 
 "use strict";
 
-var commentController;
-var comment_list;
-var ctCSS = `
+let commentController;
+let comment_list;
+const ctCSS = `
 .ct--collapse-button { padding: 3px; }
 .ct--collapsed-comment .author > .avatar { display: none; }
 .ct--collapsed-comment .comment_callbacks > a { opacity: 0.7; }
@@ -103,7 +103,7 @@ function setupEventListeners() {
     // that matches their selector. Because this binding is only done at load (and in a few other
     // cases), and because cloneNode does not copy event listeners, embeds will not work in expanded
     // comments. Listeners scoped to the comment list let all embeds work.
-    let containerClasses = ["user_image_link", "youtube_container", "embed-container"];
+    const containerClasses = ["user_image_link", "youtube_container", "embed-container"];
     App.globalBinders
         .filter(binder => containerClasses.includes(binder.class))
         .forEach(binder => {
@@ -123,7 +123,7 @@ var commentControllerShell = {
 
     /* Methods that shadow existing methods */
 
-    getComment: function(id) {
+    getComment(id) {
         let rewriteComment = comment => {
             let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
@@ -148,19 +148,19 @@ var commentControllerShell = {
         }
     },
 
-    setupQuotes: function() {
+    setupQuotes() {
         CommentListController.prototype.setupQuotes.call(this);
         this.storeComments();
         this.rewriteQuoteLinks(this.comment_list);
         setupCollapseButtons();
     },
 
-    goToPage: function(num) {
+    goToPage(num) {
         this.storeComments();
         CommentListController.prototype.goToPage.call(this, num);
     },
 
-    beginShowQuote: function(quoteLink) {
+    beginShowQuote(quoteLink) {
         // Just in case a mouseover event is triggered before the last mouseover's mouseout has
         this.endShowQuote();
 
@@ -190,14 +190,14 @@ var commentControllerShell = {
         };
     },
 
-    endShowQuote: function() {
+    endShowQuote() {
         clearTimeout(this.hoverTimeout);
         if (this.quote_container.firstChild !== null) {
             removeElement(this.quote_container.firstChild);
         }
     },
 
-    expandQuote: function(quoteLink) {
+    expandQuote(quoteLink) {
         let parent = fQuery.closestParent(quoteLink, ".comment");
 
         // Don't expand parent links or links within collapsed comments
@@ -254,38 +254,38 @@ var commentControllerShell = {
         }
     },
 
-    previous: function() {
+    previous() {
         if (1 < this.current_page) {
-            location.hash = "#page/" + (this.current_page - 1);
+            location.hash = `#page/${this.current_page - 1}`;
         }
     },
 
-    next: function() {
+    next() {
         if (this.current_page < this.num_pages) {
-            location.hash = "#page/" + (this.current_page + 1);
+            location.hash = `#page/${this.current_page + 1}`;
         }
     },
 
     /* Extra methods */
 
-    storeComments: function() {
+    storeComments() {
         for (let comment of this.comment_list.children) {
             if (isCommentDeleted(comment)) {
                 this.commentMetadata[comment.dataset.comment_id] = {
                     author: comment.dataset.author,
-                    deleted: true
+                    deleted: true,
                 };
             } else {
                 let link = comment.querySelector("a[href^='#comment/']");
                 this.commentMetadata[comment.dataset.comment_id] = {
                     author: comment.dataset.author,
-                    index: Number(link.textContent.slice(1).replace(/,/g, ""))
+                    index: Number(link.textContent.slice(1).replace(/,/g, "")),
                 };
             }
         }
     },
 
-    rewriteQuoteLinks: function(elem) {
+    rewriteQuoteLinks(elem) {
         for (let quoteLink of elem.querySelectorAll(".comment_quote_link:not(.comment_callback)")) {
             let id = quoteLink.dataset.comment_id;
             let meta = this.commentMetadata[id];
@@ -302,7 +302,7 @@ var commentControllerShell = {
                 }
             }
         }
-    }
+    },
 };
 
 function isCommentDeleted(comment) {
@@ -453,7 +453,7 @@ function getQuoteLinkStatus(quoteLink) {
         isParentLink: quoteLink.dataset.parentLink,
         parentCollapsed: fQuery
             .closestParent(quoteLink, ".comment")
-            .classList.contains("ct--collapsed-comment")
+            .classList.contains("ct--collapsed-comment"),
     };
 }
 
@@ -474,7 +474,7 @@ function removeElement(elem) {
 
 // Despite the @run-at option, the userscript is sometimes run before the Fimfiction JS, which
 // causes errors. So, we wait for the page to be fully loaded.
-if (document.readyState == "complete") {
+if (document.readyState === "complete") {
     init();
 } else {
     window.addEventListener("load", init);
