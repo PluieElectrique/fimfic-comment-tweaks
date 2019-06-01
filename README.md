@@ -14,6 +14,8 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
     * "Oldest First" ordering: Collapses the comment, its replies, replies to those replies, and so on
     * "Newest First" ordering: Collapses the comment, comments it replied to, comment those comments replied to, and so on
 
+![Comment collapse button in the header of a comment.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/comment-collapse-button.png)
+
 * Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment
     * "Oldest First" ordering: Expanding a callback (in the header of a comment) hides the original comment
     * "Newest First" ordering: Expanding a quote link (in the body of a comment) hides the original comment
