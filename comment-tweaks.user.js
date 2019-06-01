@@ -34,7 +34,7 @@ const ctCSS = `
 .ct--forward-hidden { display: none; }
 .ct--parent-link-highlight { text-decoration: underline; }
 @media all and (min-width: 701px) {
-  .comment .data { padding-right: 0.3rem; }
+  .comment .data, .comment_information > .buttons { padding-right: 0.3rem; }
   .inline-quote .meta > .name { display: inline; }
 }
 `;
