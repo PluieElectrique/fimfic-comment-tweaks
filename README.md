@@ -1,5 +1,7 @@
 # Fimfiction Comment Tweaks
 
+A collection of miscellaneous tweaks to Fimfiction comments.
+
 ## Install
 
 Install a userscript manager like [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/). (It may work with Greasemonkey or other userscript managers, but I haven't tested them.)
@@ -10,11 +12,11 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 * Comment collapsing: Collapse a comment and all of its "descendants"
     * "Oldest First" ordering: Collapses the comment, its replies, replies to those replies, and so on
-    * "Newest First" ordering: Collapses the comment, comments that it replied to, comment that those comments replied to, and so on
+    * "Newest First" ordering: Collapses the comment, comments it replied to, comment those comments replied to, and so on
 
 * Forward hiding: Clicking and expanding a link to a "forward" comment will hide the original comment
-    * "Oldest First" ordering: Expanding a callback (in the header of a comment) will hide the original comment
-    * "Newest First" ordering: Expanding a quote link (in the body of a comment) will hide the original comment
+    * "Oldest First" ordering: Expanding a callback (in the header of a comment) hides the original comment
+    * "Newest First" ordering: Expanding a quote link (in the body of a comment) hides the original comment
 
 ### Quote links
 
@@ -34,7 +36,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Miscellaneous
 
-* Expanded comments do not expand with their own expanded comments
+* Comments do not expand with expanded child comments
 * Comments expanded from callbacks are grouped together below the comment header (Normally, expanded comments are inserted after their callbacks, which can push down unexpanded callbacks)
 * Embeds (image, YouTube, etc) work correctly in expanded comments
 * Expanded comments show the username in the header
@@ -43,9 +45,12 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Mobile
 
-On mobile, the main difference is that there are no callbacks (as is normal). This means that collapsing a comment will collapse just that comment, and not any of its descendants. This is the case in both "Oldest First" and "Newest First" orders.
+Most of these features don't apply to mobile, but the script does work on the mobile site. The differences/features are:
 
-* Disabled showing comments on hover (`mouseover` events can sometimes be triggered)
+* Collapsing a comment collapses just that comment, and not any of its descendants
+* Forward hiding only works with the "Newest First" ordering, as there are no callbacks
+* Right padding is not decreased (it causes an overflow, and deeply nested comments can't fit on mobile screens anyway)
+* Hover comments are disabled (they can accidentally be triggered, and don't look good)
 
 ## Thanks
 
