@@ -250,8 +250,8 @@ function init() {
     comment_list = commentController.comment_list;
     Object.assign(commentController, commentControllerShell);
 
+    commentController.storeComments();
     if (is_mobile) {
-        commentController.storeComments();
         commentController.rewriteQuoteLinks(comment_list);
     }
     setupCollapseButtons();
