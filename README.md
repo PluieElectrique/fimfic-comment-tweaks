@@ -28,6 +28,8 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 * When possible, cross-page quote links show the username and comment index instead of the comment ID
 ![Cross-page quote link showing the username and comment index.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/cross-page-quote-link.png)
+* Expanded callbacks are grouped below the comment header in order of expansion (Normally, replies are expanded after their callbacks, which pushes down unexpanded callbacks and makes them harder to click)
+![Comparison of normal and tweaked comment expansion from callbacks.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/callback-grouping.png)
 * Hovering on an expanded link does not show its comment
 * Quote links to the parent comment are disabled (helps prevent infinite/redundant expansion)
 * Quote links broken across two lines cannot cause flickering (the hover comment is positioned from the bottom of the quote link)
@@ -44,11 +46,10 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 ### Miscellaneous
 
 * Comments do not expand with expanded child comments
-* Comments expanded from callbacks are grouped together below the comment header (Normally, expanded comments are inserted after their callbacks, which can push down unexpanded callbacks)
-* Embeds (image, YouTube, etc) work correctly in expanded comments
+* Embeds (image, YouTube, etc) work in expanded comments
 * Expanded comments show the username in the header
-* When possible, cross-page comments show the comment index in the header instead of the comment ID (If not, the comment ID will be shown without a "#" before it to differentiate it from an index)
-* The previous/next page buttons update the URL hash
+* When possible, cross-page comments show the comment index in the header instead of the comment ID (If not, the ID is shown without a "#" before it to differentiate it from an index)
+* The previous/next page buttons update the URL hash (i.e. the visited page will be added to the browser history)
 
 ### Mobile
 
@@ -61,7 +62,7 @@ Most of these features don't apply to mobile, but the script does work on the mo
 
 ## Thanks
 
-The comment collapsing and forward hiding behavior is based off of [4chan X](https://www.4chan-x.net/).
+The comment collapsing, forward hiding, and callback grouping behavior is based off of [4chan X](https://www.4chan-x.net/).
 
 ## Legal
 
