@@ -48,7 +48,16 @@ const commentControllerShell = {
     /* Methods that shadow existing methods */
 
     getComment(id) {
-        let rewriteComment = comment => {
+        let comment = document.getElementById("comment_" + id);
+        let promise;
+        if (comment === null) {
+            promise = CommentListController.prototype.getComment.call(this, id);
+        } else {
+            promise = Promise.resolve(comment);
+        }
+
+        // We always rewrite the comment in case there's new metadata that we didn't have before.
+        return promise.then(comment => {
             let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
             // An equivalent way of checking if a comment is deleted
@@ -63,16 +72,7 @@ const commentControllerShell = {
                 this.rewriteQuoteLinks(comment);
             }
             return comment;
-        };
-
-        let comment = document.getElementById("comment_" + id);
-        if (comment === null) {
-            return CommentListController.prototype.getComment.call(this, id).then(rewriteComment);
-        } else {
-            // We always rewrite the comment just in case we've stored new metadata that we didn't
-            // have before.
-            return new Promise(f => f(rewriteComment(comment)));
-        }
+        });
     },
 
     setupQuotes() {
