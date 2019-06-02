@@ -4,7 +4,7 @@ A collection of miscellaneous tweaks to Fimfiction comments.
 
 ## Install
 
-Install a userscript manager like [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/). (It may work with Greasemonkey or other userscript managers, but I haven't tested them.)
+Install a userscript manager like [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/). (It may work with Greasemonkey or other userscript managers, but I haven't tested them.) Also ensure that you're using a reasonably modern browser (the script requires [ES6 support](https://caniuse.com/#feat=es6)).
 
 Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js) to install the userscript.
 
@@ -26,10 +26,10 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 ### Quote links
 
-* When possible, cross-page quote links show the username and comment index instead of the comment ID
-![Cross-page quote link showing the username and comment index.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/cross-page-quote-link.png)
 * Expanded callbacks are grouped below the comment header in order of expansion (Normally, replies are expanded after their callbacks, which pushes down unexpanded callbacks and makes them harder to click)
 ![Comparison of normal and tweaked comment expansion from callbacks.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/callback-grouping.png)
+* When possible, cross-page quote links show the username and comment index instead of the comment ID
+![Cross-page quote link showing the username and comment index.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/cross-page-quote-link.png)
 * Hovering on an expanded link does not show its comment
 * Quote links to the parent comment are disabled (helps prevent infinite/redundant expansion)
 * Quote links broken across two lines cannot cause flickering (the hover comment is positioned from the bottom of the quote link)
@@ -41,6 +41,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 ![Underlined parent link in an expanded child comment with multiple quote links.](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/screenshots/parent-link-highlight.png)
 * Comments shown on hover are the width of the comment list (instead of the width of their parent comment)
 * 150ms quote link hover delay shortened to 85ms
+* Increased comment width (by decreasing right padding) for deeper nesting
 * Expanded quote links are grayed out
 
 ### Miscellaneous
