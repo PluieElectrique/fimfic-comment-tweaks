@@ -58,10 +58,10 @@ const commentControllerShell = {
 
         // We always rewrite the comment in case there's new metadata that we didn't have before.
         return promise.then(comment => {
-            let meta = this.commentMetadata[id];
             let link = comment.querySelector(`a[href='#comment/${id}']`);
             // An equivalent way of checking if a comment is deleted
             if (link !== null) {
+                let meta = this.commentMetadata[id];
                 if (meta === undefined) {
                     // Remove "#" to avoid confusing comment IDs with comment indexes
                     link.textContent = link.textContent.replace("#", "");
@@ -390,11 +390,11 @@ function collapseCommentTree(comment, collapse) {
         }
     } else {
         // There's no easy way to select the quote links in the .data of this comment and ignore
-        // links in expanded comments. It would require some kind of :not(descendant of inline
-        // quote) selector, which is not possible. Instead, we select callbacks which point to the
-        // current comment, and then get the comments which have those callbacks.
-        // This seems pretty inefficient, but it only uses DOM lookups, and doesn't require
-        // extracting and storing data from the DOM, which I feel might increase complexity.
+        // links in expanded comments. It would require a :not(descendant of inline quote) selector,
+        // which isn't possible. So, we select callbacks which point to the current comment, and
+        // then get the comments which have those callbacks. This seems inefficient, but it only
+        // uses DOM lookups, and doesn't require extracting and storing data from the DOM, which I
+        // think would increase complexity.
         let quoteLinks = comment_list.querySelectorAll(
             `span[id^='comment_callbacks_'] > a[data-comment_id='${comment_id}']`
         );
@@ -440,8 +440,8 @@ function cloneComment(comment) {
     return clone;
 }
 
-// Disable links to the parent comment to prevent infinite nesting. Also highlight the link if there
-// are other links in its section.
+// Disable links to the parent comment to help prevent infinite nesting. Also highlight the link if
+// there are other links in its section.
 function markParentLink(parentComment, childComment) {
     let parentId = parentComment.dataset.comment_id;
     let linkToParent = childComment.querySelector(
