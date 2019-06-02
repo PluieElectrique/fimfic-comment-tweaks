@@ -84,7 +84,7 @@ const commentControllerShell = {
 
     goToPage(num) {
         this.storeComments();
-        CommentListController.prototype.goToPage.call(this, num);
+        return CommentListController.prototype.goToPage.call(this, num);
     },
 
     beginShowQuote(quoteLink) {
