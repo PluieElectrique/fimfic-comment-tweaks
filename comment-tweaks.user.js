@@ -2,7 +2,7 @@
 // @name           Fimfiction Comment Tweaks
 // @description    Tweaks for Fimfiction comments
 // @author         Pluie
-// @version        0.1.0
+// @version        0.1.1
 // @license        MIT
 // @homepageURL    https://github.com/PluieElectrique/fimfic-comment-tweaks
 // @supportURL     https://github.com/PluieElectrique/fimfic-comment-tweaks/issues
