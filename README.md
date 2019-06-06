@@ -56,6 +56,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 Most of these features don't apply to mobile, but the script does work on the mobile site. The differences/features are:
 
+* Quote links will show usernames instead of numbers (and the index for cross-page links, etc.)
 * Collapsing a comment collapses just that comment, and not any of its descendants
 * Forward hiding only works with the "Newest First" ordering, as there are no callbacks
 * Right padding is not decreased (it causes an overflow, and deeply nested comments can't fit on mobile screens anyway)
