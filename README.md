@@ -6,7 +6,7 @@ A collection of miscellaneous tweaks to Fimfiction comments.
 
 Install a userscript manager like [Violentmonkey](https://violentmonkey.github.io/get-it/) or [Tampermonkey](https://www.tampermonkey.net/). (It may work with Greasemonkey or other userscript managers, but I haven't tested them.) Also ensure that you're using a reasonably modern browser (the script requires [ES6 support](https://caniuse.com/#feat=es6)).
 
-Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js) to install the userscript.
+Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/master/comment-tweaks.user.js) to install from GitHub. The userscript is also [available on Greasy Fork](https://greasyfork.org/en/scripts/384602-fimfiction-comment-tweaks).
 
 ## Features
 
