@@ -38,6 +38,7 @@ const ctCSS = `
   .comment .data, .comment_information > .buttons { padding-right: 0.3rem; }
   .inline-quote .meta > .name { display: inline; }
 }
+.embed-container .placeholder.hidden { display: none; }
 `;
 
 // A wrapper object that will be assigned onto the real comment controller
@@ -302,21 +303,51 @@ function setupEventListeners() {
         }
     });
 
-    // These event listeners are added as "global binders." That is, they are added to each element
-    // that matches their selector. Because this binding is only done at load (and in a few other
-    // cases), and because cloneNode does not copy event listeners, embeds will not work in expanded
-    // comments. Listeners scoped to the comment list let all embeds work.
-    const containerClasses = ["user_image_link", "youtube_container", "embed-container"];
-    App.globalBinders
-        .filter(binder => containerClasses.includes(binder.class))
-        .forEach(binder => {
+    for (let binder of App.globalBinders) {
+        // These event listeners are "global binders." That is, they are added to each element that
+        // matches the selector. But because this binding is only done at load (and in a few other
+        // cases), and cloneNode does not copy event listeners, the listeners will not fire for
+        // expanded comments. We add a scoped listener (with ".inline-quote" prepended so that
+        // listeners don't fire twice) to fix this.
+        if (binder.class === "user_image_link" || binder.class === "youtube_container") {
             fQuery.addScopedEventListener(
                 comment_list,
-                binder.selector,
+                ".inline-quote " + binder.selector,
                 binder.event,
                 binder.binder
             );
-        });
+        } else if (binder.class === "embed-container") {
+            // Remove this listener. We replace it with a modified version below that hides
+            // .placeholder instead of removing it. This way, we can restore the .placeholder when
+            // cloning comments.
+            for (let elem of document.querySelectorAll(binder.selector)) {
+                elem.removeEventListener(binder.event, binder.binder);
+            }
+            // Disable the binder so we only have to remove listeners once
+            binder.selector = binder.class = "";
+        }
+    }
+
+    fQuery.addScopedEventListener(comment_list, ".embed-container", "click", evt => {
+        let elem = fQuery.closestParent(evt.target, ".embed-container");
+        if (elem.classList.contains("expanded")) {
+            return;
+        }
+
+        let cookieConsent = App.GetDependency("cookieConsent");
+        cookieConsent.requestConsent(["embed"]).then(
+            () => {
+                elem.classList.add("expanded");
+                elem.querySelector(".video").innerHTML = `<iframe src="${
+                    elem.dataset.src
+                }" frameborder="0" allowfullscreen></iframe>`;
+                elem.querySelector(".placeholder").classList.add("hidden");
+            },
+            () => {
+                ShowErrorWindow("Cannot view embedded content without consenting to embed cookies");
+            }
+        );
+    });
 }
 
 function isCommentDeleted(comment) {
@@ -435,6 +466,16 @@ function cloneComment(comment) {
     if (collapseButton !== null) {
         removeElement(collapseButton.nextElementSibling);
         removeElement(collapseButton);
+    }
+
+    // Reset .embed-container
+    for (let embedContainer of clone.querySelectorAll(".embed-container")) {
+        embedContainer.classList.remove("expanded");
+        let frame = embedContainer.querySelector(".video").firstChild;
+        if (frame !== null) {
+            removeElement(frame);
+        }
+        embedContainer.querySelector(".placeholder").classList.remove("hidden");
     }
 
     return clone;

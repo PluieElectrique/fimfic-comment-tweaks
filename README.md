@@ -48,6 +48,7 @@ Then, [click here](https://github.com/PluieElectrique/fimfic-comment-tweaks/raw/
 
 * Comments do not expand with expanded child comments
 * Embeds (image, YouTube, etc) work in expanded comments
+* Loaded embeds will not autoplay when appearing in hover comments (should work for YouTube, Streamable, Gfycat, and Twitch, but probably not Soundcloud)
 * Expanded comments show the username in the header
 * When possible, cross-page comments show the comment index in the header instead of the comment ID (If not, the ID is shown without a "#" before it to differentiate it from an index)
 * The previous/next page buttons update the URL hash (i.e. the visited page will be added to the browser history)
