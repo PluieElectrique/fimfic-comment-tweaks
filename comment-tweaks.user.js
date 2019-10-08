@@ -2,7 +2,7 @@
 // @name           Fimfiction Comment Tweaks
 // @description    Tweaks for Fimfiction comments
 // @author         Pluie
-// @version        0.2.0
+// @version        0.2.1
 // @license        MIT
 // @homepageURL    https://github.com/PluieElectrique/fimfic-comment-tweaks
 // @supportURL     https://github.com/PluieElectrique/fimfic-comment-tweaks/issues
@@ -328,7 +328,9 @@ function setupEventListeners() {
         }
     }
 
-    fQuery.addScopedEventListener(comment_list, ".embed-container", "click", evt => {
+    // Embed containers can occur outside of comments (e.g. in blog posts). So, we must scope this
+    // listener to the whole page.
+    fQuery.addScopedEventListener(document.body, ".embed-container", "click", evt => {
         let elem = fQuery.closestParent(evt.target, ".embed-container");
         if (elem.classList.contains("expanded")) {
             return;
