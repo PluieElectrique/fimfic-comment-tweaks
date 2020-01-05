@@ -62,6 +62,7 @@ Most of these features don't apply to mobile, but the script does work on the mo
 * Forward hiding only works with the "Newest First" ordering, as there are no callbacks
 * Right padding is not decreased (it causes an overflow, and deeply nested comments can't fit on mobile screens anyway)
 * Hover comments are disabled (they can accidentally be triggered, and don't look good)
+* The commment count is updated when refreshing the comments or changing pages
 
 ## Thanks
 

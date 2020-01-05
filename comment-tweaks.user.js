@@ -2,7 +2,7 @@
 // @name           Fimfiction Comment Tweaks
 // @description    Tweaks for Fimfiction comments
 // @author         Pluie
-// @version        0.2.1
+// @version        0.2.2
 // @license        MIT
 // @homepageURL    https://github.com/PluieElectrique/fimfic-comment-tweaks
 // @supportURL     https://github.com/PluieElectrique/fimfic-comment-tweaks/issues
@@ -85,7 +85,15 @@ const commentControllerShell = {
 
     goToPage(num) {
         this.storeComments();
-        return CommentListController.prototype.goToPage.call(this, num);
+        return CommentListController.prototype.goToPage.call(this, num).then(_ => {
+            if (is_mobile) {
+                let numComments = document.querySelector(".num-comments").textContent;
+                // There's a space before "Comments" for consistency with the Fimfiction HTML
+                document.querySelector(
+                    ".comments-header > .fa-comments"
+                ).nextSibling.nodeValue = ` Comments ( ${numComments} )`;
+            }
+        });
     },
 
     beginShowQuote(quoteLink) {
